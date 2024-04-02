@@ -1,12 +1,12 @@
-import { Navigate, useRoutes } from 'react-router-dom';
+import { useRoutes } from 'react-router-dom';
 
-import { ExternalLayout, InternalLayout } from '../../layouts';
-import NotFoundPage from '../../pages/NotFound';
+import { ExternalLayout, InternalLayout } from '@frontend/layouts';
 
-import { Routes } from '../../constants/Routes';
-import LoginPage from '../../pages/Login';
-import SignupPage from '../../pages/Signup';
-import FeedPage from '../../pages/Feed';
+import FeedPage from '@frontend/pages/Feed';
+import LoginPage from '@frontend/pages/Login';
+import NotFoundPage from '@frontend/pages/NotFound';
+import SignupPage from '@frontend/pages/Signup';
+import { Routes } from '@frontend/constants/Routes';
 
 export default function RouterProvider() {
   const { home, feed, posts, login, signup } = Routes;

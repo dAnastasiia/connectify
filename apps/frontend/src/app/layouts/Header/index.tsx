@@ -14,7 +14,7 @@ import {
   Typography,
 } from '@mui/material';
 
-import { Routes } from '../../constants/Routes';
+import { Routes } from '@frontend/constants/Routes';
 
 interface Page {
   name: string;
@@ -40,11 +40,12 @@ export default function Header() {
 
   return (
     <AppBar position="static">
-      <Container maxWidth="xl">
+      <Container maxWidth={false} sx={{ px: 3 }}>
         <Toolbar disableGutters>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map(({ name, href }) => (
               <Link
+                key={name}
                 href={href}
                 sx={{
                   my: 2,

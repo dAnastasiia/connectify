@@ -1,6 +1,6 @@
 import { Typography } from '@mui/material';
 
-import { ExternalLayout } from '../../layouts';
+import { ExternalLayout } from '@frontend/layouts';
 
 export default function NotFoundPage() {
   return (
