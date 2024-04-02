@@ -15,14 +15,14 @@ export default function Post({
   title,
   content,
   imageUrl,
-  date,
+  createdAt,
 }: IPost) {
   return (
     <Card>
       <CardHeader
         avatar={<Avatar>{author[0]}</Avatar>}
         title={title}
-        subheader={parseDate(date)}
+        subheader={parseDate(createdAt)}
       />
       <CardMedia component="img" height={194} image={imageUrl} />
       <CardContent>

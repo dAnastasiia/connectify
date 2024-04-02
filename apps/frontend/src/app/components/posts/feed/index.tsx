@@ -19,7 +19,7 @@ export default function Feed() {
   return (
     <Grid container>
       {data?.map((post) => (
-        <Grid key={post.title} item md={6} lg={4}>
+        <Grid key={post._id} item md={6} lg={4}>
           <Post {...post} />
         </Grid>
       ))}

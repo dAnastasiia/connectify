@@ -7,9 +7,10 @@ export interface PageableResponse<T> {
 }
 
 export interface IPost {
+  _id: string;
   author: string;
   title: string;
   content: string;
   imageUrl: string;
-  date: string;
+  createdAt: string;
 }
