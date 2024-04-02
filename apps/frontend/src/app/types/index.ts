@@ -6,11 +6,24 @@ export interface PageableResponse<T> {
   // totalCount: number;
 }
 
-export interface IPost {
-  _id: string;
-  author: string;
+export interface PostResponse<T> {
+  message: string;
+  data: T;
+}
+
+export interface CustomError {
+  message: string;
+  errors?: { [key: string]: string }[];
+}
+
+export interface ICreatePost {
   title: string;
   content: string;
+}
+
+export interface IPost extends ICreatePost {
+  _id: string;
+  author: string;
   imageUrl: string;
   createdAt: string;
 }
