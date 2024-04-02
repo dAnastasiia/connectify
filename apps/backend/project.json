@@ -8,13 +8,13 @@
     "build": {
       "executor": "@nx/esbuild:esbuild",
       "outputs": ["{options.outputPath}"],
-      "defaultConfiguration": "production",
+      "defaultConfiguration": "development",
       "options": {
         "platform": "node",
         "outputPath": "dist/apps/backend",
         "format": ["cjs"],
         "bundle": false,
-        "main": "apps/backend/src/main.ts",
+        "main": "apps/backend/src/main.js",
         "tsConfig": "apps/backend/tsconfig.app.json",
         "assets": ["apps/backend/src/assets"],
         "generatePackageJson": true,
@@ -26,7 +26,14 @@
         }
       },
       "configurations": {
-        "development": {},
+        "development": {
+          "fileReplacements": [
+            {
+              "replace": "apps/admin-portal/src/environments/environment.ts",
+              "with": "apps/admin-portal/src/environments/environment.ts"
+            }
+          ]
+        },
         "production": {
           "esbuildOptions": {
             "sourcemap": false,
