@@ -1,7 +1,17 @@
+import { DateTime } from 'luxon';
+
 export const getPosts = (req, res, next) => {
-  res
-    .status(200)
-    .json({ posts: [{ title: 'First Post', content: 'Lorem ipsum...' }] });
+  res.status(200).json({
+    data: [
+      {
+        author: 'J. K. Rowling',
+        title: 'First Post',
+        content: 'Lorem ipsum...',
+        imageUrl: 'images/bicycle.jpg',
+        date: DateTime.now(),
+      },
+    ],
+  });
 };
 
 export const createPost = (req, res, next) => {
