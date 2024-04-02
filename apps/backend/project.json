@@ -8,7 +8,7 @@
     "build": {
       "executor": "@nx/esbuild:esbuild",
       "outputs": ["{options.outputPath}"],
-      "defaultConfiguration": "production",
+      "defaultConfiguration": "development",
       "options": {
         "platform": "node",
         "outputPath": "dist/apps/backend",
@@ -26,7 +26,14 @@
         }
       },
       "configurations": {
-        "development": {},
+        "development": {
+          "fileReplacements": [
+            {
+              "replace": "apps/admin-portal/src/environments/environment.ts",
+              "with": "apps/admin-portal/src/environments/environment.ts"
+            }
+          ]
+        },
         "production": {
           "esbuildOptions": {
             "sourcemap": false,
