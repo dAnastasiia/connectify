@@ -1,8 +1,11 @@
 import { BrowserRouter } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import {
   LocalizationProvider,
   LoggerProvider,
+  NotificationsProvider,
   QueryClientProvider,
   RouterProvider,
   ThemeProvider,
@@ -14,9 +17,12 @@ export default function App() {
       <QueryClientProvider>
         <ThemeProvider>
           <LoggerProvider>
-            <BrowserRouter>
-              <RouterProvider />
-            </BrowserRouter>
+            <NotificationsProvider>
+              <BrowserRouter>
+                <RouterProvider />
+                <ToastContainer position="top-right" theme="colored" />
+              </BrowserRouter>
+            </NotificationsProvider>
           </LoggerProvider>
         </ThemeProvider>
       </QueryClientProvider>
