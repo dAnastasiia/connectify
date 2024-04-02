@@ -5,7 +5,12 @@
     "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
     "strict": true,
-    "types": ["vite/client", "vitest"]
+    "resolveJsonModule": true,
+    "types": ["vite/client", "vitest"],
+    "baseUrl": "./src/app",
+    "paths": {
+      "@frontend/*": ["./*"]
+    }
   },
   "files": [],
   "include": [],

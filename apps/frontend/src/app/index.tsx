@@ -1,5 +1,25 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { BrowserRouter } from 'react-router-dom';
+
+import {
+  LocalizationProvider,
+  LoggerProvider,
+  QueryClientProvider,
+  RouterProvider,
+  ThemeProvider,
+} from './providers';
 
 export default function App() {
-  return <div>Hello world</div>;
+  return (
+    <LocalizationProvider>
+      <QueryClientProvider>
+        <ThemeProvider>
+          <LoggerProvider>
+            <BrowserRouter>
+              <RouterProvider />
+            </BrowserRouter>
+          </LoggerProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </LocalizationProvider>
+  );
 }
