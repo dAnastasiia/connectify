@@ -2,6 +2,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
+import path from 'path';
 
 export default defineConfig({
   root: __dirname,
@@ -23,6 +24,13 @@ export default defineConfig({
   // worker: {
   //  plugins: [ nxViteTsPaths() ],
   // },
+
+  resolve: {
+    alias: {
+      // Define your TypeScript aliases here
+      '@frontend': path.resolve(__dirname, 'src/app'), // Assuming 'src' directory is the root for your frontend code
+    },
+  },
 
   build: {
     outDir: '../../dist/apps/frontend',
