@@ -26,4 +26,5 @@ export interface IPost extends ICreatePost {
   author: string;
   imageUrl: string;
   createdAt: string;
+  updatedAt: string;
 }

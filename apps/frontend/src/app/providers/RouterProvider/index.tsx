@@ -1,12 +1,13 @@
 import { useRoutes } from 'react-router-dom';
 
+import { Routes } from '@frontend/constants/Routes';
 import { ExternalLayout, InternalLayout } from '@frontend/layouts';
 
 import FeedPage from '@frontend/pages/Feed';
 import LoginPage from '@frontend/pages/Login';
 import NotFoundPage from '@frontend/pages/NotFound';
+import PostPage from '@frontend/pages/Post';
 import SignupPage from '@frontend/pages/Signup';
-import { Routes } from '@frontend/constants/Routes';
 
 export default function RouterProvider() {
   const { home, feed, posts, login, signup } = Routes;
@@ -38,7 +39,19 @@ export default function RouterProvider() {
           children: [
             {
               path: posts.baseRoutes.URL,
-              element: <FeedPage />,
+              children: [
+                { index: true, element: <FeedPage /> },
+
+                {
+                  path: posts.baseRoutes.itemId,
+                  children: [
+                    {
+                      index: true,
+                      element: <PostPage />,
+                    },
+                  ],
+                },
+              ],
             },
           ],
         },
