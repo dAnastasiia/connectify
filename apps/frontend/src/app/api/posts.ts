@@ -16,6 +16,12 @@ export const getPosts = async () => {
   return response.data?.data;
 };
 
+export const getPost = async (id: string) => {
+  const response = await axios.get(`${postPath}/${id}`);
+
+  return response.data;
+};
+
 export const createPost = async (
   data: ICreatePost
   //   image: File

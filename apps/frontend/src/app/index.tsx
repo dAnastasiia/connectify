@@ -20,7 +20,7 @@ export default function App() {
             <NotificationsProvider>
               <BrowserRouter>
                 <RouterProvider />
-                <ToastContainer position="top-right" theme="colored" />
+                <ToastContainer position="bottom-right" theme="colored" />
               </BrowserRouter>
             </NotificationsProvider>
           </LoggerProvider>
