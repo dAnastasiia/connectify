@@ -3,6 +3,7 @@ import path from 'path';
 import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
+import multer from 'multer';
 
 import feedRoutes from './routes/feed';
 
@@ -15,7 +16,23 @@ const imagesLocation = path.join('tmp', 'images'); // ! Temporary fix
 
 const app = express();
 
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, 'tmp/images'),
+  filename: (req, file, cb) =>
+    cb(null, `${Date.now().toString()}-${file.originalname}`),
+});
+const fileFilter = (req, file, cb) => {
+  const allowedMimetypes = ['image/png', 'image/jpg', 'image/jpeg'];
+
+  if (allowedMimetypes.includes(file.mimetype)) {
+    return cb(null, true);
+  } else {
+    return cb(null, false);
+  }
+};
+
 app.use(bodyParser.json()); // * parser for Content-Form: application/json
+app.use(multer({ storage, fileFilter }).single('image'));
 app.use('/images', express.static(imagesLocation));
 
 // * Setup special headers to avoid CORS error
