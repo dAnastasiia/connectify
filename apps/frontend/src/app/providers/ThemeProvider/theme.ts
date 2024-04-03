@@ -15,7 +15,7 @@ export const defaultTheme = createTheme({
       defaultProps: { helperText: ' ', size: 'small', variant: 'standard' },
     },
     MuiStack: { defaultProps: { spacing: 2 } },
-    MuiGrid: { defaultProps: { spacing: 2 } },
+    MuiGrid: { defaultProps: { spacing: 3 } },
   },
 
   typography: {
