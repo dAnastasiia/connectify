@@ -9,5 +9,6 @@ export const formParams = {
   defaultValues: {
     title: '',
     content: '',
+    image: {} as File,
   },
 };

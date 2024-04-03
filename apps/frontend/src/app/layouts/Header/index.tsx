@@ -106,6 +106,7 @@ export default function Header() {
                 href={href}
                 sx={{
                   my: 2,
+                  mr: 2,
                   color: 'white',
                   display: 'block',
                   textDecoration: 'none !important',

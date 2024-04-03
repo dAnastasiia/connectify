@@ -46,8 +46,8 @@ export default function Post({
         component="img"
         sx={{
           display: 'block',
-          maxHeight: 300,
-          objectFit: 'contain',
+          height: 300,
+          objectFit: 'cover',
         }}
         image={`${environment.API_URL}${imageUrl}`}
       />

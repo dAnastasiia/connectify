@@ -34,6 +34,13 @@ export const getPost = async (req, res, next) => {
 
 export const createPost = async (req, res, next) => {
   const errors = validationResult(req);
+  const file = req.file;
+
+  if (!file) {
+    const error = new Error('Image is not provided');
+    error.statusCode = 422;
+    throw error;
+  }
 
   if (!errors.isEmpty()) {
     const error = new Error('Data is incorrect');
@@ -41,14 +48,15 @@ export const createPost = async (req, res, next) => {
     throw error;
   }
 
+  const imageUrl = file.path.split('\\').slice(1).join('/'); // ! Temporary fix
   const { title, content } = req.body;
 
   try {
     const data = new Post({
       title,
       content,
+      imageUrl,
       author: 'G. Weeles',
-      imageUrl: 'images/bicycle.jpg',
     });
 
     await data.save();
