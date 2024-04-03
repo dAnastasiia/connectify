@@ -1,10 +1,5 @@
 import axios from './axios';
-import {
-  PageableResponse,
-  IPost,
-  ICreatePost,
-  PostResponse,
-} from '@frontend/types';
+import { PageableResponse, IPost, ICreatePost } from '@frontend/types';
 
 const mainPath = 'feed';
 const postsPath = `${mainPath}/posts`;
@@ -22,23 +17,15 @@ export const getPost = async (id: string) => {
   return response.data;
 };
 
-export const createPost = async (
-  data: ICreatePost
-  //   image: File
-) => {
-  // * Handling files
-  //   const fd = new FormData();
-  //   for (const key in data) {
-  //     fd.append(key, `${data[key as keyof typeof data] ?? ''}`);
-  //   }
-  //   image && fd.append('imageUrl', image);
-  //   await axios.post(postPath, fd, {
-  //     headers: {
-  //       'Content-Type': 'multipart/form-data',
-  //     },
-  //   });
+export const createPost = async (data: ICreatePost) => {
+  const formData = new FormData();
+  for (const key in data) {
+    formData.append(key, data[key as keyof typeof data] ?? '');
+  }
 
-  const response = await axios.post<PostResponse<IPost>>(postPath, data);
-
-  return response.data;
+  await axios.post(postPath, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
 };

@@ -19,11 +19,14 @@ export interface CustomError {
 export interface ICreatePost {
   title: string;
   content: string;
+  image: File;
 }
 
-export interface IPost extends ICreatePost {
+export interface IPost {
   _id: string;
   author: string;
+  title: string;
+  content: string;
   imageUrl: string;
   createdAt: string;
   updatedAt: string;

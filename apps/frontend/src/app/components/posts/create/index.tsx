@@ -13,12 +13,12 @@ import {
   Stack,
 } from '@mui/material';
 
-import FormInput from '@frontend/ui-kit/FormInput';
+import { FormInput, PhotoInput } from '@frontend/ui-kit/CustomInputs';
 import LoadingButton from '@frontend/ui-kit/LoadingButton';
 
 import { createPost } from '@frontend/api/posts';
 import useNotifications from '@frontend/hooks/useNotifications';
-import { CustomError, ICreatePost, IPost, PostResponse } from '@frontend/types';
+import { CustomError, ICreatePost } from '@frontend/types';
 
 import { formParams } from './helpers';
 
@@ -33,23 +33,21 @@ export default function CreatePost({ onCreate }: CreatePostProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleClose = () => {
-    form.reset();
     setIsOpen(false);
+    form.reset();
   };
 
   const { mutate, isPending } = useMutation({
     mutationFn: createPost,
-    onSuccess: ({ message }: PostResponse<IPost>) => {
-      handleSuccess(message);
+    onSuccess: () => {
+      handleSuccess('Post created');
       handleClose();
       onCreate();
     },
     onError: (error: CustomError) => handleError(error),
   });
 
-  const handleSubmit = (data: ICreatePost) => {
-    mutate(data);
-  };
+  const handleSubmit = (data: ICreatePost) => mutate(data);
 
   return (
     <>
@@ -72,6 +70,9 @@ export default function CreatePost({ onCreate }: CreatePostProps) {
 
             <Stack sx={{ pt: 2 }}>
               <FormInput label="Title" name="title" type="text" fullWidth />
+
+              <PhotoInput name="image" />
+
               <FormInput
                 label="Content"
                 name="content"
