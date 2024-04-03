@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
-import { getPosts, createPost } from '../controllers/feed';
+import { getPosts, getPost, createPost } from '../controllers/feed';
 
 const router = Router();
 
@@ -13,5 +13,6 @@ router.post(
   ],
   createPost
 );
+router.get('/post/:postId', getPost);
 
 export default router;

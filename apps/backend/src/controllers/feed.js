@@ -1,48 +1,63 @@
-import { randomUUID } from 'crypto';
-import { DateTime } from 'luxon';
 import { validationResult } from 'express-validator';
 
-export const getPosts = (req, res, next) => {
-  res.status(200).json({
-    data: [
-      {
-        _id: 'qwerty',
-        author: 'J. K. Rowling',
-        title: 'First Post',
-        content:
-          'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Ipsum perspiciatis a repellat quidem corrupti non, est quisquam? Sunt vel eum labore, beatae, totam quia iusto odit nulla quibusdam dignissimos doloribus tempore voluptatibus unde dolor dolore facilis maxime rerum, voluptates deserunt sapiente fugiat soluta velit distinctio. Quasi fuga eos ullam nisi.',
-        imageUrl: 'images/bicycle.jpg',
-        createdAt: '2024-04-01T19:04:15.729+03:00',
-      },
-    ],
-  });
+import Post from '../models/post';
+
+import handleError from '../utils/handleError';
+
+export const getPosts = async (req, res, next) => {
+  try {
+    const data = await Post.find();
+
+    res.status(200).json({ data });
+  } catch (err) {
+    handleError(error, next); // * Check if it's the server error
+  }
 };
 
-export const createPost = (req, res, next) => {
+export const getPost = async (req, res, next) => {
+  const { postId } = req.params;
+
+  try {
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      const error = new Error("Couldn't fint the post");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    res.status(200).json({ ...post._doc });
+  } catch (error) {
+    handleError(error, next);
+  }
+};
+
+export const createPost = async (req, res, next) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    console.log('errors: ', errors);
-    res.status(422).json({
-      message: 'Data is incorrect',
-      errors: errors.array(),
-    });
+    const error = new Error('Data is incorrect');
+    error.statusCode = 422;
+    throw error;
   }
 
   const { title, content } = req.body;
 
-  const data = {
-    _id: randomUUID(),
-    title,
-    content,
-    author: 'J. K. Rowling',
-    imageUrl: 'images/bicycle.jpg',
-    createdAt: DateTime.now().toISO(),
-  };
-  console.log('BE data: ', data);
+  try {
+    const data = new Post({
+      title,
+      content,
+      author: 'G. Weeles',
+      imageUrl: 'images/bicycle.jpg',
+    });
 
-  res.status(201).json({
-    message: 'Successfully created',
-    data,
-  });
+    await data.save();
+
+    res.status(201).json({
+      message: 'Successfully created',
+      data,
+    });
+  } catch (error) {
+    handleError(error, next);
+  }
 };
