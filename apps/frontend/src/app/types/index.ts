@@ -1,9 +1,8 @@
 export interface PageableResponse<T> {
   data: T[];
-  // pageNumber: number;
-  // pageSize: number;
-  // totalPages: number;
-  // totalCount: number;
+  pageNumber: number;
+  pageSize: number;
+  totalCount: number;
 }
 
 export interface DataResponse<T> {
