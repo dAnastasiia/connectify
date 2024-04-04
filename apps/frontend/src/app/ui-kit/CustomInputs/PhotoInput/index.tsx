@@ -1,19 +1,23 @@
 import React, { ChangeEvent, useState } from 'react';
 
+import { useController, useFormContext } from 'react-hook-form';
+
 import {
   Box,
   FormControl,
-  FormHelperText,
+  TextField,
   Typography,
   useTheme,
 } from '@mui/material';
-import { useController, useFormContext } from 'react-hook-form';
+
+import { environment } from '../../../../environments/environment';
 
 interface PhotoProps {
   name: string;
+  imageUrl?: string;
 }
 
-export default function Photo({ name }: PhotoProps) {
+export default function Photo({ name, imageUrl }: PhotoProps) {
   const [uploadedPhoto, setUploadedPhoto] = useState('');
   const { spacing, palette } = useTheme();
 
@@ -68,53 +72,59 @@ export default function Photo({ name }: PhotoProps) {
 
   return (
     <FormControl fullWidth>
-      <Box textAlign="center">
-        <label>
-          <input
-            style={{ display: 'none' }}
-            type="file"
-            onChange={handleFileUpload}
-            onClick={handleInputClick}
-          />
+      <label>
+        <TextField
+          fullWidth
+          style={{ textAlign: 'left' }}
+          type="file"
+          error={!!error}
+          helperText={error?.message}
+          onChange={handleFileUpload}
+          onClick={handleInputClick}
+        />
+        <Box
+          onDrop={onDrop}
+          onDragOver={onDragOver}
+          onDragLeave={onDragLeave}
+          sx={{
+            width: 1,
+            mt: 0.5,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: spacing(10),
+            borderStyle: 'dashed',
+            borderColor: palette.grey[700],
+            borderWidth: 2,
+            cursor: 'pointer',
+            backgroundColor: palette.common.white,
 
-          <Box
-            onDrop={onDrop}
-            onDragOver={onDragOver}
-            onDragLeave={onDragLeave}
-            sx={{
-              width: 1,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              minHeight: spacing(10),
-              borderStyle: 'dashed',
-              borderColor: palette.grey[700],
-              borderWidth: 2,
-              cursor: 'pointer',
-              backgroundColor: palette.common.white,
+            ...(isHover && { backgroundColor: palette.grey[200] }),
+          }}
+        >
+          {imageUrl && !uploadedPhoto && (
+            <Box
+              width={1}
+              component="img"
+              src={`${environment.API_URL}${imageUrl}`}
+              sx={{ objectFit: 'contain', maxHeight: spacing(30) }}
+            />
+          )}
 
-              ...(isHover && { backgroundColor: palette.grey[200] }),
-            }}
-          >
-            {isFileCorrect ? (
-              <Box
-                component="img"
-                src={uploadedPhoto}
-                width={1}
-                sx={{ objectFit: 'contain', maxHeight: spacing(30) }}
-              />
-            ) : (
-              <Typography variant="h6">Select image</Typography>
-            )}
-          </Box>
-        </label>
+          {isFileCorrect && (
+            <Box
+              width={1}
+              component="img"
+              src={uploadedPhoto}
+              sx={{ objectFit: 'contain', maxHeight: spacing(30) }}
+            />
+          )}
 
-        <Box sx={{ marginTop: 1 }}>
-          <FormHelperText error={!!error}>
-            {error?.message || ' '}
-          </FormHelperText>
+          {!imageUrl && (!uploadedPhoto || !isFileCorrect) && (
+            <Typography variant="h6">Select image</Typography>
+          )}
         </Box>
-      </Box>
+      </label>
     </FormControl>
   );
 }

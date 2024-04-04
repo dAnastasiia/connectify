@@ -16,18 +16,19 @@ import {
 import { FormInput, PhotoInput } from '@frontend/ui-kit/CustomInputs';
 import LoadingButton from '@frontend/ui-kit/LoadingButton';
 
-import { createPost } from '@frontend/api/posts';
+import { updatePost } from '@frontend/api/posts';
 import useNotifications from '@frontend/hooks/useNotifications';
-import { CustomError, ICreatePost } from '@frontend/types';
+import { CustomError, ICreatePost, IPost, IUpdatePost } from '@frontend/types';
 
 import { formParams } from './helpers';
 
-interface CreatePostProps {
-  onCreate: () => void;
+interface UpdatePostProps {
+  data?: IPost;
+  onSuccess: () => void;
 }
 
-export default function CreatePost({ onCreate }: CreatePostProps) {
-  const form = useForm(formParams);
+export default function UpdatePost({ data, onSuccess }: UpdatePostProps) {
+  const form = useForm(formParams(data));
   const { handleSuccess, handleError } = useNotifications();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -38,20 +39,26 @@ export default function CreatePost({ onCreate }: CreatePostProps) {
   };
 
   const { mutate, isPending } = useMutation({
-    mutationFn: createPost,
+    mutationFn: updatePost,
     onSuccess: () => {
-      handleSuccess('Post created');
+      handleSuccess('Post updated');
       handleClose();
-      onCreate();
+      onSuccess();
     },
     onError: (error: CustomError) => handleError(error),
   });
 
-  const handleSubmit = (data: ICreatePost) => mutate(data);
+  const handleSubmit = (formData: ICreatePost) => {
+    const id = data?._id || '';
+    const imageUrl = data?.imageUrl || '';
+    const dataObj: IUpdatePost = { id, ...formData, imageUrl };
+
+    mutate(dataObj);
+  };
 
   return (
     <>
-      <Button onClick={() => setIsOpen(true)}>New post</Button>
+      <Button onClick={() => setIsOpen(true)}>Edit</Button>
 
       <FormProvider {...form}>
         <Dialog
@@ -61,17 +68,15 @@ export default function CreatePost({ onCreate }: CreatePostProps) {
           open={isOpen}
           fullWidth
         >
-          <DialogTitle>New post</DialogTitle>
+          <DialogTitle>Edit post</DialogTitle>
 
           <DialogContent>
-            <DialogContentText>
-              Please fill all fields to add your awesome post.
-            </DialogContentText>
+            <DialogContentText>Update needed info.</DialogContentText>
 
             <Stack sx={{ pt: 2 }}>
               <FormInput label="Title" name="title" type="text" fullWidth />
 
-              <PhotoInput name="image" />
+              <PhotoInput name="image" imageUrl={data?.imageUrl} />
 
               <FormInput
                 label="Content"
@@ -88,7 +93,7 @@ export default function CreatePost({ onCreate }: CreatePostProps) {
               Cancel
             </Button>
 
-            <LoadingButton label="Create" loading={isPending} />
+            <LoadingButton label="Update" loading={isPending} />
           </DialogActions>
         </Dialog>
       </FormProvider>

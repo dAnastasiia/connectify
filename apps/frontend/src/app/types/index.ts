@@ -6,7 +6,7 @@ export interface PageableResponse<T> {
   // totalCount: number;
 }
 
-export interface PostResponse<T> {
+export interface DataResponse<T> {
   message: string;
   data: T;
 }
@@ -20,6 +20,14 @@ export interface ICreatePost {
   title: string;
   content: string;
   image: File;
+}
+
+export interface IUpdatePost {
+  id: string;
+  title: string;
+  content: string;
+  imageUrl: string;
+  image: File | null;
 }
 
 export interface IPost {
