@@ -13,9 +13,6 @@ const router = Router();
 // GET posts
 router.get('/posts', getPosts);
 
-// GET post
-router.get('/post/:postId', getPost);
-
 // CREATE post
 router.post(
   '/post',
@@ -38,5 +35,8 @@ router.put(
 
 // DELETE post
 router.delete('/post/:postId', deletePost);
+
+// READ post
+router.get('/post/:postId', getPost);
 
 export default router;
