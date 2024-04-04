@@ -24,7 +24,7 @@ export const getPost = async (req, res, next) => {
     const post = await Post.findById(postId);
 
     if (!post) {
-      const error = new Error("Couldn't fint the post");
+      const error = new Error("Couldn't find the post");
       error.statusCode = 404;
       throw error;
     }
@@ -99,7 +99,7 @@ export const updatePost = async (req, res, next) => {
     const post = await Post.findById(postId);
 
     if (!post) {
-      const error = new Error("Couldn't fint the post");
+      const error = new Error("Couldn't find the post");
       error.statusCode = 404;
       throw error;
     }
@@ -129,16 +129,28 @@ export const updatePost = async (req, res, next) => {
 };
 
 export const deletePost = async (req, res, next) => {
-  const { postId } = req.params;
+  const { postId: _id } = req.params;
 
   try {
-    // const post = await Post.findById(postId);
-    // if (!post) {
-    //   const error = new Error("Couldn't fint the post");
-    //   error.statusCode = 404;
-    //   throw error;
-    // }
-    // res.status(200);
+    const post = await Post.findById(_id);
+
+    if (!post) {
+      const error = new Error("Couldn't find the post");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    await Post.deleteOne({ _id });
+    // ! -- Temporary fix
+    const filePath = path.join('tmp', post.imageUrl);
+    fs.unlink(filePath, (err) => {
+      if (err) {
+        throw err;
+      }
+    });
+    // ! --
+
+    res.status(200).json({ message: 'Successfully deleted' });
   } catch (error) {
     handleError(error, next);
   }
