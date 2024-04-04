@@ -4,7 +4,6 @@ import { useMutation } from '@tanstack/react-query';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import {
-  Box,
   Button,
   Dialog,
   DialogActions,
@@ -59,9 +58,7 @@ export default function UpdatePost({ data, onSuccess }: UpdatePostProps) {
 
   return (
     <>
-      <Box sx={{ textAlign: 'right' }}>
-        <Button onClick={() => setIsOpen(true)}>Edit</Button>
-      </Box>
+      <Button onClick={() => setIsOpen(true)}>Edit</Button>
 
       <FormProvider {...form}>
         <Dialog

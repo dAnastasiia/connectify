@@ -37,12 +37,9 @@ export const createPost = async (data: ICreatePost) => {
 };
 
 export const updatePost = async (data: IUpdatePost) => {
-  const formData = new FormData();
-  //   for (const key in data) {
-  //     formData.append(key, data[key as keyof typeof data] ?? '');
-  //   }
   const { id, title, content, image, imageUrl } = data;
 
+  const formData = new FormData();
   formData.append('title', title);
   formData.append('content', content);
   formData.append('imageUrl', imageUrl);
@@ -57,3 +54,6 @@ export const updatePost = async (data: IUpdatePost) => {
     },
   });
 };
+
+export const deletePost = async (id: string) =>
+  await axios.delete(`${postPath}/${id}`);

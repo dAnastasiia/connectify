@@ -10,6 +10,7 @@ import { getPost } from '@frontend/api/posts';
 import { IPost } from '@frontend/types';
 import parseDate from '@frontend/utils/parseDate';
 
+import DeletePost from '../delete';
 import UpdatePost from '../update';
 
 import { environment } from '../../../../environments/environment';
@@ -26,7 +27,10 @@ export default function PostDetails() {
 
   return (
     <Stack>
-      <UpdatePost data={data} onSuccess={refetch} />
+      <Stack direction="row" sx={{ justifyContent: 'flex-end' }}>
+        <UpdatePost data={data} onSuccess={refetch} />
+        <DeletePost />
+      </Stack>
 
       <Typography
         component="h1"
