@@ -47,7 +47,7 @@ app.use('/feed', feedRoutes);
 
 // * Errors handler
 app.use((error, req, res, next) => {
-  console.error('error: ', error);
+  console.error('Error handler: ', error);
   const status = error.statusCode || 500;
   const message = error.message;
 
