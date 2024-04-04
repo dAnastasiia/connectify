@@ -3,7 +3,6 @@ import {
   PageableResponse,
   IPost,
   ICreatePost,
-  DataResponse,
   IUpdatePost,
 } from '@frontend/types';
 
@@ -11,10 +10,12 @@ const mainPath = 'feed';
 const postsPath = `${mainPath}/posts`;
 const postPath = `${mainPath}/post`;
 
-export const getPosts = async () => {
-  const response = await axios.get<PageableResponse<IPost>>(postsPath);
+export const getPosts = async (page: number) => {
+  const response = await axios.get<PageableResponse<IPost>>(postsPath, {
+    params: { page },
+  });
 
-  return response.data?.data;
+  return response.data;
 };
 
 export const getPost = async (id: string) => {

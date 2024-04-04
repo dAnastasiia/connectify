@@ -8,10 +8,17 @@ import Post from '../models/post';
 import handleError from '../utils/handleError';
 
 export const getPosts = async (req, res, next) => {
-  try {
-    const data = await Post.find();
+  const pageNumber = +req.query.page || 1;
+  const pageSize = 4;
 
-    res.status(200).json({ data });
+  try {
+    const totalCount = await Post.find().countDocuments();
+
+    const data = await Post.find()
+      .skip((pageNumber - 1) * pageSize)
+      .limit(pageSize);
+
+    res.status(200).json({ data, pageNumber, pageSize, totalCount });
   } catch (err) {
     handleError(error, next); // * Check if it's the server error
   }
