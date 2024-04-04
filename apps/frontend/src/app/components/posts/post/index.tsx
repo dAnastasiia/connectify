@@ -10,6 +10,8 @@ import { getPost } from '@frontend/api/posts';
 import { IPost } from '@frontend/types';
 import parseDate from '@frontend/utils/parseDate';
 
+import UpdatePost from '../update';
+
 import { environment } from '../../../../environments/environment';
 
 export default function PostDetails() {
@@ -24,6 +26,8 @@ export default function PostDetails() {
 
   return (
     <Stack>
+      <UpdatePost data={data} onSuccess={refetch} />
+
       <Typography
         component="h1"
         variant="h2"
