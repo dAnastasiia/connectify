@@ -38,7 +38,11 @@ export default function Post({
       }}
     >
       <CardHeader
-        avatar={<Avatar sx={{ bgcolor: 'primary.main' }}>{author[0]}</Avatar>}
+        avatar={
+          <Avatar sx={{ bgcolor: 'primary.main' }}>
+            {/* {author?.name[0]} */}X
+          </Avatar>
+        }
         title={title}
         subheader={parseDate(createdAt)}
       />

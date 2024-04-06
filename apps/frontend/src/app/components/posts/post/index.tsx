@@ -44,7 +44,8 @@ export default function PostDetails() {
 
       <Stack spacing={0.5}>
         <Typography variant="subtitle2" align="center" color="textSecondary">
-          Created at {parseDate(data?.createdAt || '')} by {data?.author}
+          Created at {parseDate(data?.createdAt || '')} by XXX
+          {/* {data?.author?.name} */}
         </Typography>
         <Typography variant="body2" align="center" color="textSecondary">
           (updated at {parseDate(data?.updatedAt || '')})

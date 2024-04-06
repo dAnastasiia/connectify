@@ -4,13 +4,16 @@ import path from 'path';
 import { validationResult } from 'express-validator';
 
 import Post from '../models/post';
+import User from '../models/user';
 import { createError, handleError } from '../utils/errors';
 
 export const getPosts = async (req, res, next) => {
+  //   const { userId: author } = req;
   const pageNumber = +req.query.page || 1;
   const pageSize = 4;
 
   try {
+    //{ author }
     const totalCount = await Post.find().countDocuments();
 
     const data = await Post.find()
@@ -40,6 +43,7 @@ export const getPost = async (req, res, next) => {
 };
 
 export const createPost = async (req, res, next) => {
+  const { userId } = req;
   const errors = validationResult(req);
   const file = req.file;
 
@@ -59,10 +63,15 @@ export const createPost = async (req, res, next) => {
       title,
       content,
       imageUrl,
-      author: 'G. Weeles',
+      author: userId,
     });
 
     await data.save();
+
+    const user = await User.findById(userId);
+    user.posts.push(data);
+
+    await user.save();
 
     res.status(201).json({
       message: 'Successfully created',
