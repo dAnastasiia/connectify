@@ -35,18 +35,6 @@ export const Routes: MainRoutes = {
     },
   },
 
-  unauthorized: {
-    baseRoutes: {
-      URL: 'unauthorized',
-    },
-  },
-
-  feed: {
-    baseRoutes: {
-      URL: 'feed',
-    },
-  },
-
   posts: {
     baseRoutes: {
       URL: 'posts',

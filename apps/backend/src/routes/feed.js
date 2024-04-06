@@ -14,11 +14,11 @@ import isAuth from '../middlewares/auth';
 const router = Router();
 
 // GET posts
-router.get('/posts', isAuth, getPosts);
+router.get('/', isAuth, getPosts);
 
 // CREATE post
 router.post(
-  '/post',
+  '/',
   isAuth,
   [
     body('title', 'Invalid title').trim().isString().isLength({ min: 5 }),
@@ -29,7 +29,7 @@ router.post(
 
 // UPDATE post
 router.put(
-  '/post/:postId',
+  '/:postId',
   isAuth,
   [
     body('title', 'Invalid title').trim().isString().isLength({ min: 5 }),
@@ -39,9 +39,9 @@ router.put(
 );
 
 // DELETE post
-router.delete('/post/:postId', isAuth, deletePost);
+router.delete('/:postId', isAuth, deletePost);
 
 // READ post
-router.get('/post/:postId', isAuth, getPost);
+router.get('/:postId', isAuth, getPost);
 
 export default router;

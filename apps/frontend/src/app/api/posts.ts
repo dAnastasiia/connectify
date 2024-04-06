@@ -6,12 +6,10 @@ import {
   IUpdatePost,
 } from '@frontend/types';
 
-const mainPath = 'feed';
-const postsPath = `${mainPath}/posts`;
-const postPath = `${mainPath}/post`;
+const path = 'posts';
 
 export const getPosts = async (page: number) => {
-  const response = await axios.get<PageableResponse<IPost>>(postsPath, {
+  const response = await axios.get<PageableResponse<IPost>>(path, {
     params: { page },
   });
 
@@ -19,7 +17,7 @@ export const getPosts = async (page: number) => {
 };
 
 export const getPost = async (id: string) => {
-  const response = await axios.get(`${postPath}/${id}`);
+  const response = await axios.get(`${path}/${id}`);
 
   return response.data;
 };
@@ -30,7 +28,7 @@ export const createPost = async (data: ICreatePost) => {
     formData.append(key, data[key as keyof typeof data] ?? '');
   }
 
-  await axios.post(postPath, formData, {
+  await axios.post(path, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
@@ -49,7 +47,7 @@ export const updatePost = async (data: IUpdatePost) => {
     formData.append('image', image);
   }
 
-  await axios.put(`${postPath}/${id}`, formData, {
+  await axios.put(`${path}/${id}`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
@@ -57,4 +55,4 @@ export const updatePost = async (data: IUpdatePost) => {
 };
 
 export const deletePost = async (id: string) =>
-  await axios.delete(`${postPath}/${id}`);
+  await axios.delete(`${path}/${id}`);

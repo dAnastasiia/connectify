@@ -19,11 +19,11 @@ import { Routes } from '@frontend/constants/Routes';
 import { Page } from './helpers';
 import UserMenu from './model/UserMenu';
 
-const { home, feed, posts } = Routes;
+const { home,  posts } = Routes;
 
 const pages: Page[] = [
   { name: 'Home', href: home.baseRoutes.URL },
-  { name: 'Feed', href: `${feed.baseRoutes.URL}/${posts.baseRoutes.URL}` },
+  { name: 'Posts', href: posts.baseRoutes.URL },
 ];
 
 export default function Header() {

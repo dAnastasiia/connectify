@@ -16,7 +16,7 @@ import PrivateRoute from './PrivateRoute';
 
 export default function RouterProvider() {
   const { isLoading } = useAuth();
-  const { home, feed, posts, login, signup, unauthorized } = Routes;
+  const { home, posts, login, signup } = Routes;
 
   return useRoutes([
     {
@@ -50,21 +50,16 @@ export default function RouterProvider() {
         },
 
         {
-          path: feed.baseRoutes.URL,
+          path: posts.baseRoutes.URL,
           children: [
-            {
-              path: posts.baseRoutes.URL,
-              children: [
-                { index: true, element: <FeedPage /> },
+            { index: true, element: <FeedPage /> },
 
+            {
+              path: posts.baseRoutes.itemId,
+              children: [
                 {
-                  path: posts.baseRoutes.itemId,
-                  children: [
-                    {
-                      index: true,
-                      element: <PostPage />,
-                    },
-                  ],
+                  index: true,
+                  element: <PostPage />,
                 },
               ],
             },

@@ -12,14 +12,14 @@ import { CustomError, IPost, PageableResponse } from '@frontend/types';
 import Post from '../card';
 import CreatePost from '../create';
 
-export default function Feed() {
+export default function PostFeed() {
   const [page, setPage] = useState(1);
 
   const { data, isLoading, refetch, error } = useQuery<
     PageableResponse<IPost>,
     CustomError
   >({
-    queryKey: ['feed', page],
+    queryKey: ['posts', page],
     queryFn: () => getPosts(page),
   });
 

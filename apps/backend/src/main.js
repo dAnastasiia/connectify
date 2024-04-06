@@ -44,7 +44,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/feed', feedRoutes);
+app.use('/posts', feedRoutes);
 app.use('/auth', authRoutes);
 
 // * Errors handler
