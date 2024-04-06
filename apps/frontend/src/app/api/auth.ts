@@ -11,3 +11,5 @@ export const login = async (data: ILogin) => {
 
   return response.data;
 };
+
+export const logout = () => axios.get(`${path}/logout`);

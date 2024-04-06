@@ -45,10 +45,9 @@ axiosInstance.interceptors.response.use(
       response: { data, status },
     } = error;
 
-    // ? return when will be logout and routes' protection
-    //  if (status === 401) {
-    //    handleLogout();
-    //  }
+    if (status === 401) {
+      handleLogout();
+    }
 
     return Promise.reject(data);
   }

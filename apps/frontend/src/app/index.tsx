@@ -3,6 +3,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import {
+  AuthProvider,
   LocalizationProvider,
   LoggerProvider,
   NotificationsProvider,
@@ -19,8 +20,10 @@ export default function App() {
           <LoggerProvider>
             <NotificationsProvider>
               <BrowserRouter>
-                <RouterProvider />
-                <ToastContainer position="bottom-right" theme="colored" />
+                <AuthProvider>
+                  <RouterProvider />
+                  <ToastContainer position="bottom-right" theme="colored" />
+                </AuthProvider>
               </BrowserRouter>
             </NotificationsProvider>
           </LoggerProvider>

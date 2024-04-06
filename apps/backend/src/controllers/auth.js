@@ -65,3 +65,7 @@ export const login = async (req, res, next) => {
     handleError(error, next);
   }
 };
+
+export const logout = (req, res, next) => {
+  res.status(200).send('Logged out successfully');
+};

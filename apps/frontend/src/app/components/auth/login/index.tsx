@@ -1,41 +1,21 @@
-import { useNavigate } from 'react-router-dom';
-
-import { useMutation } from '@tanstack/react-query';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import { Stack } from '@mui/material';
+import { Link, Stack } from '@mui/material';
 
 import AuthForm from '@frontend/ui-kit/AuthForm';
 import { FormInput } from '@frontend/ui-kit/CustomInputs';
 import LoadingButton from '@frontend/ui-kit/LoadingButton';
 
-import { login } from '@frontend/api/auth';
 import { Routes } from '@frontend/constants/Routes';
-import useNotifications from '@frontend/hooks/useNotifications';
-import { CustomError, ILogin, ILoginResponse } from '@frontend/types';
+import useAuth from '@frontend/hooks/useAuth';
 
 import { formParams } from './helpers';
-import { LOCAL_STORAGE_KEYS } from '@frontend/utils/constants';
 
 export default function LoginForm() {
-  const navigate = useNavigate();
-
   const form = useForm(formParams);
-  const { handleError } = useNotifications();
+  const { handleLogin, isLoading } = useAuth();
 
-  const { feed, posts } = Routes;
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: login,
-    onSuccess: ({ accessToken }: ILoginResponse) => {
-      localStorage.setItem(LOCAL_STORAGE_KEYS.accessToken, accessToken);
-
-      navigate(`/${feed.baseRoutes.URL}/${posts.baseRoutes.URL}`);
-    },
-    onError: (error: CustomError) => handleError(error),
-  });
-
-  const handleSubmit = (data: ILogin) => mutate(data);
+  const { signup } = Routes;
 
   return (
     <AuthForm title="Log in">
@@ -43,12 +23,16 @@ export default function LoginForm() {
         <Stack
           noValidate
           component="form"
-          onSubmit={form.handleSubmit(handleSubmit)}
+          onSubmit={form.handleSubmit(handleLogin)}
         >
           <FormInput label="Email" name="email" />
           <FormInput label="Password" name="password" type="password" />
 
-          <LoadingButton label="Log in" fullWidth loading={isPending} />
+          <LoadingButton label="Log in" fullWidth loading={isLoading} />
+
+          <Link href={signup.baseRoutes.URL} alignSelf="center" variant="body2">
+            Don't have an account? Sign Up
+          </Link>
         </Stack>
       </FormProvider>
     </AuthForm>

@@ -12,6 +12,7 @@ export interface DataResponse<T> {
 
 export interface CustomError {
   message: string;
+  status: number;
   errors?: { [key: string]: string }[];
 }
 

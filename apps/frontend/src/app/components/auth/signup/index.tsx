@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import { Stack } from '@mui/material';
+import { Link, Stack } from '@mui/material';
 
 import AuthForm from '@frontend/ui-kit/AuthForm';
 import { FormInput } from '@frontend/ui-kit/CustomInputs';
@@ -62,6 +62,10 @@ export default function SignupForm() {
           />
 
           <LoadingButton label="Sign Up" fullWidth loading={isPending} />
+
+          <Link href={login.baseRoutes.URL} alignSelf="center" variant="body2">
+            Already have an account? Log In
+          </Link>
         </Stack>
       </FormProvider>
     </AuthForm>

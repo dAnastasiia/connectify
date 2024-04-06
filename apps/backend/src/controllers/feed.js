@@ -8,15 +8,14 @@ import User from '../models/user';
 import { createError, handleError } from '../utils/errors';
 
 export const getPosts = async (req, res, next) => {
-  //   const { userId: author } = req;
+  const { userId: author } = req;
   const pageNumber = +req.query.page || 1;
   const pageSize = 4;
 
   try {
-    //{ author }
-    const totalCount = await Post.find().countDocuments();
+    const totalCount = await Post.find({ author }).countDocuments();
 
-    const data = await Post.find()
+    const data = await Post.find({ author })
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize);
 
@@ -27,6 +26,7 @@ export const getPosts = async (req, res, next) => {
 };
 
 export const getPost = async (req, res, next) => {
+  const { userId } = req;
   const { postId } = req.params;
 
   try {
@@ -34,6 +34,12 @@ export const getPost = async (req, res, next) => {
 
     if (!post) {
       createError("Couldn't find the post", 404);
+    }
+
+    const isCreator = post.author?.toString() === userId;
+
+    if (!isCreator) {
+      createError('Not authorized', 403);
     }
 
     res.status(200).json({ ...post._doc });
@@ -83,6 +89,7 @@ export const createPost = async (req, res, next) => {
 };
 
 export const updatePost = async (req, res, next) => {
+  const { userId } = req;
   const { postId } = req.params;
   const errors = validationResult(req);
 
@@ -105,6 +112,12 @@ export const updatePost = async (req, res, next) => {
 
     if (!post) {
       createError("Couldn't find the post", 404);
+    }
+
+    const isCreator = post.author?.toString() === userId;
+
+    if (!isCreator) {
+      createError('Not authorized', 403);
     }
 
     post.title = title;
@@ -132,6 +145,7 @@ export const updatePost = async (req, res, next) => {
 };
 
 export const deletePost = async (req, res, next) => {
+  const { userId } = req;
   const { postId: _id } = req.params;
 
   try {
@@ -139,6 +153,12 @@ export const deletePost = async (req, res, next) => {
 
     if (!post) {
       createError("Couldn't find the post", 404);
+    }
+
+    const isCreator = post.author?.toString() === userId;
+
+    if (!isCreator) {
+      createError('Not authorized', 403);
     }
 
     await Post.deleteOne({ _id });
@@ -150,6 +170,11 @@ export const deletePost = async (req, res, next) => {
       }
     });
     // ! --
+
+    const user = await User.findById(userId);
+
+    user.posts.pull(_id); // * remove post from user obj
+    await user.save();
 
     res.status(200).json({ message: 'Successfully deleted' });
   } catch (error) {

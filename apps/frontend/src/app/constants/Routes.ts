@@ -35,9 +35,9 @@ export const Routes: MainRoutes = {
     },
   },
 
-  company: {
+  unauthorized: {
     baseRoutes: {
-      URL: 'company',
+      URL: 'unauthorized',
     },
   },
 

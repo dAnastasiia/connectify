@@ -1,7 +1,9 @@
 import { useRoutes } from 'react-router-dom';
 
 import { Routes } from '@frontend/constants/Routes';
+import useAuth from '@frontend/hooks/useAuth';
 import { ExternalLayout, InternalLayout } from '@frontend/layouts';
+import Loader from '@frontend/ui-kit/Loader';
 
 import FeedPage from '@frontend/pages/Feed';
 import LoginPage from '@frontend/pages/Login';
@@ -9,12 +11,20 @@ import NotFoundPage from '@frontend/pages/NotFound';
 import PostPage from '@frontend/pages/Post';
 import SignupPage from '@frontend/pages/Signup';
 
+import AuthGuard from './AuthGuard';
+import PrivateRoute from './PrivateRoute';
+
 export default function RouterProvider() {
-  const { home, feed, posts, login, signup } = Routes;
+  const { isLoading } = useAuth();
+  const { home, feed, posts, login, signup, unauthorized } = Routes;
 
   return useRoutes([
     {
-      element: <ExternalLayout />,
+      element: (
+        <AuthGuard>
+          <ExternalLayout />
+        </AuthGuard>
+      ),
       children: [
         {
           path: login.baseRoutes.URL,
@@ -27,7 +37,12 @@ export default function RouterProvider() {
       ],
     },
     {
-      element: <InternalLayout />,
+      element: (
+        <PrivateRoute>
+          {isLoading ? <Loader isGlobal /> : <InternalLayout />}
+        </PrivateRoute>
+      ),
+
       children: [
         {
           path: home.baseRoutes.URL,
