@@ -5,6 +5,9 @@ export const defaultTheme = createTheme({
     primary: {
       main: '#345995',
     },
+    secondary: {
+      main: '#905CEB',
+    },
 
     background: { default: '#F8F6F1' },
   },

@@ -31,7 +31,7 @@ export const Routes: MainRoutes = {
 
   signup: {
     baseRoutes: {
-      URL: 'signup/email/:email/code/:code',
+      URL: 'signup',
     },
   },
 
