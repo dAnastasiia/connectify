@@ -14,8 +14,8 @@ export const getPosts = async (req, res, next) => {
 
   try {
     const totalCount = await Post.find({ author }).countDocuments();
-
     const data = await Post.find({ author })
+      .populate('author', 'name email')
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize);
 
@@ -30,7 +30,7 @@ export const getPost = async (req, res, next) => {
   const { postId } = req.params;
 
   try {
-    const post = await Post.findById(postId);
+    const post = await Post.findById(postId).populate('author', 'name email');
 
     if (!post) {
       createError("Couldn't find the post", 404);
