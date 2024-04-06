@@ -30,9 +30,15 @@ export interface IUpdatePost {
   image: File | null;
 }
 
+export interface IUser {
+  _id: string;
+  name: string;
+  email: string;
+}
+
 export interface IPost {
   _id: string;
-  author: string;
+  author: IUser;
   title: string;
   content: string;
   imageUrl: string;
