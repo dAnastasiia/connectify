@@ -1,3 +1,5 @@
+import LoginForm from '@frontend/components/auth/login';
+
 export default function LoginPage() {
-  return <p>LoginPage</p>;
+  return <LoginForm />;
 }

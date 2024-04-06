@@ -3,23 +3,21 @@ import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { Avatar, Paper, Stack, Typography, useTheme } from '@mui/material';
+import { Stack } from '@mui/material';
 
+import AuthForm from '@frontend/ui-kit/AuthForm';
 import { FormInput } from '@frontend/ui-kit/CustomInputs';
 import LoadingButton from '@frontend/ui-kit/LoadingButton';
 
-import useNotifications from '@frontend/hooks/useNotifications';
-
 import { signup } from '@frontend/api/auth';
 import { Routes } from '@frontend/constants/Routes';
+import useNotifications from '@frontend/hooks/useNotifications';
 import { CustomError } from '@frontend/types';
 
 import { formParams, ISignupForm } from './helpers';
 
 export default function SignupForm() {
   const navigate = useNavigate();
-  const { breakpoints, spacing } = useTheme();
 
   const form = useForm(formParams);
   const { handleSuccess, handleError } = useNotifications();
@@ -41,31 +39,12 @@ export default function SignupForm() {
   };
 
   return (
-    <Paper
-      sx={{
-        p: 3,
-        width: 1,
-        [breakpoints.up('md')]: {
-          maxWidth: spacing(70),
-        },
-      }}
-    >
-      <Stack alignItems="center">
-        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-          <LockOutlinedIcon />
-        </Avatar>
-
-        <Typography component="h1" variant="h5">
-          Sign up
-        </Typography>
-      </Stack>
-
+    <AuthForm title="Sign up">
       <FormProvider {...form}>
         <Stack
           noValidate
           component="form"
           onSubmit={form.handleSubmit(handleSubmit)}
-          sx={{ my: 3 }}
         >
           <FormInput label="Name" name="name" autoComplete="full-name" />
           <FormInput label="Email" name="email" autoComplete="email" />
@@ -85,6 +64,6 @@ export default function SignupForm() {
           <LoadingButton label="Sign Up" fullWidth loading={isPending} />
         </Stack>
       </FormProvider>
-    </Paper>
+    </AuthForm>
   );
 }
