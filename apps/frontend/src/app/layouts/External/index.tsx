@@ -1,8 +1,8 @@
-import { PropsWithChildren } from 'react';
+import { Outlet } from 'react-router-dom';
 
 import { Container } from '@mui/material';
 
-export default function ExternalLayout({ children }: PropsWithChildren) {
+export default function ExternalLayout() {
   return (
     <Container
       component="main"
@@ -16,7 +16,7 @@ export default function ExternalLayout({ children }: PropsWithChildren) {
         p: 3,
       }}
     >
-      {children}
+      <Outlet />
     </Container>
   );
 }
