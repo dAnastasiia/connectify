@@ -1,3 +1,4 @@
+export { default as AuthProvider } from './AuthProvider';
 export { default as LocalizationProvider } from './LocalizationProvider';
 export { default as LoggerProvider } from './LoggerProvider';
 export { default as NotificationsProvider } from './NotificationsProvider';

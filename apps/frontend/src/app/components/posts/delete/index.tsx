@@ -27,7 +27,7 @@ export default function DeletePost() {
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const { feed, posts } = Routes;
+  const { posts } = Routes;
 
   const handleClose = () => {
     setIsOpen(false);
@@ -38,7 +38,7 @@ export default function DeletePost() {
     onSuccess: () => {
       handleSuccess('Post deleted');
       handleClose();
-      navigate(`/${feed.baseRoutes.URL}/${posts.baseRoutes.URL}`);
+      navigate(`/${posts.baseRoutes.URL}`);
     },
     onError: (error: CustomError) => handleError(error),
   });

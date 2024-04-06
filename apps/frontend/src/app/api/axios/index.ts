@@ -1,6 +1,13 @@
 import axios from 'axios';
 
+import { LOCAL_STORAGE_KEYS } from '@frontend/utils/constants';
+import getJwtExpDate from '@frontend/utils/getJwtExpDate';
+
+import { handleLogout } from './handleLogout';
+
 import { environment } from '../../../environments/environment';
+
+LOCAL_STORAGE_KEYS;
 
 const axiosInstance = axios.create({
   baseURL: environment.API_URL,
@@ -12,7 +19,15 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   async (config) => {
-    // ...
+    const accessToken = localStorage.getItem(LOCAL_STORAGE_KEYS.accessToken);
+
+    const expirationDate = getJwtExpDate(accessToken);
+    const isTokenExpired = expirationDate < Date.now();
+
+    if (accessToken && !isTokenExpired) {
+      config.headers.Authorization = 'Bearer ' + accessToken;
+      return config;
+    }
 
     return config;
   },
@@ -26,11 +41,13 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   async (error) => {
-    // ...
-
     const {
-      response: { data },
+      response: { data, status },
     } = error;
+
+    if (status === 401) {
+      handleLogout();
+    }
 
     return Promise.reject(data);
   }

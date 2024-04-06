@@ -44,7 +44,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/feed', feedRoutes);
+app.use('/posts', feedRoutes);
 app.use('/auth', authRoutes);
 
 // * Errors handler
@@ -54,7 +54,7 @@ app.use((error, req, res, next) => {
   const message = error.message;
   const errors = error.data;
 
-  res.status(status).json({ message, errors });
+  res.status(status).json({ message, status, errors });
 });
 
 mongoose

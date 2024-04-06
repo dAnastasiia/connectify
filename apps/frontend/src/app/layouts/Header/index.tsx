@@ -1,9 +1,9 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import MenuIcon from '@mui/icons-material/Menu';
 import {
   AppBar,
-  Avatar,
   Box,
   Container,
   IconButton,
@@ -11,32 +11,26 @@ import {
   Menu,
   MenuItem,
   Toolbar,
-  Tooltip,
   Typography,
 } from '@mui/material';
 
 import { Routes } from '@frontend/constants/Routes';
-import { useNavigate } from 'react-router-dom';
 
-interface Page {
-  name: string;
-  href: string;
-}
+import { Page } from './helpers';
+import UserMenu from './model/UserMenu';
 
-const { home, feed, posts } = Routes;
+const { home,  posts } = Routes;
+
 const pages: Page[] = [
   { name: 'Home', href: home.baseRoutes.URL },
-  { name: 'Feed', href: `${feed.baseRoutes.URL}/${posts.baseRoutes.URL}` },
+  { name: 'Posts', href: posts.baseRoutes.URL },
 ];
-const settings = ['Logout'];
 
 export default function Header() {
   const navigate = useNavigate();
 
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
-  const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
-  // Navigation
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
   };
@@ -45,15 +39,6 @@ export default function Header() {
   };
   const onNavMenuItemClick = (href: string) => {
     navigate(href);
-    handleCloseUserMenu();
-  };
-
-  // User menu
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget);
-  };
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
   };
 
   return (
@@ -117,36 +102,7 @@ export default function Header() {
             ))}
           </Box>
 
-          {/* User menu */}
-          <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: '45px' }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={!!anchorElUser}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
+          <UserMenu />
         </Toolbar>
       </Container>
     </AppBar>

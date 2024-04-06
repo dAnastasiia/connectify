@@ -35,18 +35,6 @@ export const Routes: MainRoutes = {
     },
   },
 
-  company: {
-    baseRoutes: {
-      URL: 'company',
-    },
-  },
-
-  feed: {
-    baseRoutes: {
-      URL: 'feed',
-    },
-  },
-
   posts: {
     baseRoutes: {
       URL: 'posts',

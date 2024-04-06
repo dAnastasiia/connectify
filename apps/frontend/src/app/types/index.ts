@@ -12,6 +12,7 @@ export interface DataResponse<T> {
 
 export interface CustomError {
   message: string;
+  status: number;
   errors?: { [key: string]: string }[];
 }
 
@@ -39,8 +40,16 @@ export interface IPost {
   updatedAt: string;
 }
 
-export interface ISignup {
-  name: string;
+export interface ILogin {
   email: string;
   password: string;
+}
+
+export interface ILoginResponse {
+  accessToken: string;
+  userId: string;
+}
+
+export interface ISignup extends ILogin {
+  name: string;
 }
