@@ -1,5 +1,6 @@
-import { SUPPORTED_PHOTO_FORMATS } from '@frontend/utils/constants';
 import * as yup from 'yup';
+
+import { SUPPORTED_PHOTO_FORMATS } from '@frontend/utils/validation';
 
 const validationSchema = yup.object({
   title: yup.string().min(3, 'Too short').required('Required'),

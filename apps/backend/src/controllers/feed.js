@@ -4,8 +4,7 @@ import path from 'path';
 import { validationResult } from 'express-validator';
 
 import Post from '../models/post';
-
-import handleError from '../utils/handleError';
+import { createError, handleError } from '../utils/errors';
 
 export const getPosts = async (req, res, next) => {
   const pageNumber = +req.query.page || 1;
@@ -31,9 +30,7 @@ export const getPost = async (req, res, next) => {
     const post = await Post.findById(postId);
 
     if (!post) {
-      const error = new Error("Couldn't find the post");
-      error.statusCode = 404;
-      throw error;
+      createError("Couldn't find the post", 404);
     }
 
     res.status(200).json({ ...post._doc });
@@ -46,22 +43,18 @@ export const createPost = async (req, res, next) => {
   const errors = validationResult(req);
   const file = req.file;
 
-  if (!file) {
-    const error = new Error('Image is not provided');
-    error.statusCode = 422;
-    throw error;
-  }
-
-  if (!errors.isEmpty()) {
-    const error = new Error('Data is incorrect');
-    error.statusCode = 422;
-    throw error;
-  }
-
-  const imageUrl = file.path.split('\\').slice(1).join('/'); // ! Temporary fix
-  const { title, content } = req.body;
-
   try {
+    if (!file) {
+      createError('Image is not provided', 422); // * Erors should be inside trycatch to global error handler can get it
+    }
+
+    if (!errors.isEmpty()) {
+      createError('Data is incorrect', 422, errors.array());
+    }
+
+    const imageUrl = file.path.split('\\').slice(1).join('/'); // ! Temporary fix
+    const { title, content } = req.body;
+
     const data = new Post({
       title,
       content,
@@ -84,31 +77,25 @@ export const updatePost = async (req, res, next) => {
   const { postId } = req.params;
   const errors = validationResult(req);
 
-  if (!errors.isEmpty()) {
-    const error = new Error('Data is incorrect');
-    error.statusCode = 422;
-    throw error;
-  }
-
-  const file = req.file;
-  const { title, content, imageUrl } = req.body;
-  const fileImageUrl = file
-    ? file.path.split('\\').slice(1).join('/')
-    : imageUrl; // ! Temporary fix
-
-  if (!imageUrl && !file) {
-    const error = new Error('Image is not provided');
-    error.statusCode = 422;
-    throw error;
-  }
-
   try {
+    if (!errors.isEmpty()) {
+      createError('Data is incorrect', 422, errors.array());
+    }
+
+    const file = req.file;
+    const { title, content, imageUrl } = req.body;
+    const fileImageUrl = file
+      ? file.path.split('\\').slice(1).join('/')
+      : imageUrl; // ! Temporary fix
+
+    if (!imageUrl && !file) {
+      createError('Image is not provided', 422);
+    }
+
     const post = await Post.findById(postId);
 
     if (!post) {
-      const error = new Error("Couldn't find the post");
-      error.statusCode = 404;
-      throw error;
+      createError("Couldn't find the post", 404);
     }
 
     post.title = title;
@@ -142,9 +129,7 @@ export const deletePost = async (req, res, next) => {
     const post = await Post.findById(_id);
 
     if (!post) {
-      const error = new Error("Couldn't find the post");
-      error.statusCode = 404;
-      throw error;
+      createError("Couldn't find the post", 404);
     }
 
     await Post.deleteOne({ _id });
