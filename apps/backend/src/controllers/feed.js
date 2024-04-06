@@ -36,7 +36,7 @@ export const getPost = async (req, res, next) => {
       createError("Couldn't find the post", 404);
     }
 
-    const isCreator = post.author?.toString() === userId;
+    const isCreator = post.author?._id.toString() === userId;
 
     if (!isCreator) {
       createError('Not authorized', 403);
