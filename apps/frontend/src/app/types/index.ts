@@ -38,3 +38,9 @@ export interface IPost {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface ISignup {
+  name: string;
+  email: string;
+  password: string;
+}
