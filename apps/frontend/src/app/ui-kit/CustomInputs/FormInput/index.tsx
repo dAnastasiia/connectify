@@ -14,6 +14,7 @@ export default function FormInput({ name, ...props }: FormInputProps) {
 
   return (
     <TextField
+      type="text"
       {...field}
       {...props}
       fullWidth

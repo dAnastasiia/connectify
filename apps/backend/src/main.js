@@ -1,10 +1,11 @@
 import path from 'path';
 
-import express from 'express';
 import bodyParser from 'body-parser';
+import express from 'express';
 import mongoose from 'mongoose';
 import multer from 'multer';
 
+import authRoutes from './routes/auth';
 import feedRoutes from './routes/feed';
 
 import { environment } from './environments/environment';
@@ -44,14 +45,16 @@ app.use((req, res, next) => {
 });
 
 app.use('/feed', feedRoutes);
+app.use('/auth', authRoutes);
 
 // * Errors handler
 app.use((error, req, res, next) => {
   console.error('Error handler: ', error);
   const status = error.statusCode || 500;
   const message = error.message;
+  const errors = error.data;
 
-  res.status(status).json({ message });
+  res.status(status).json({ message, errors });
 });
 
 mongoose

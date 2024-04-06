@@ -69,17 +69,11 @@ export default function CreatePost({ onCreate }: CreatePostProps) {
             </DialogContentText>
 
             <Stack sx={{ pt: 2 }}>
-              <FormInput label="Title" name="title" type="text" fullWidth />
+              <FormInput label="Title" name="title" />
 
               <PhotoInput name="image" />
 
-              <FormInput
-                label="Content"
-                name="content"
-                multiline
-                rows={5}
-                fullWidth
-              />
+              <FormInput label="Content" name="content" multiline rows={5} />
             </Stack>
           </DialogContent>
 

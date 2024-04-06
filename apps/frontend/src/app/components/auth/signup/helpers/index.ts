@@ -1,3 +1,4 @@
+import * as yup from 'yup';
 import { ValidationMode } from 'react-hook-form';
 
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -8,8 +9,11 @@ export const formParams = {
   mode: 'onChange' as keyof ValidationMode,
   resolver: yupResolver(validationSchema),
   defaultValues: {
-    title: '',
-    content: '',
-    image: {} as File,
+    name: '',
+    email: '',
+    password: '',
+    passwordConfirmation: '',
   },
 };
+
+export type ISignupForm = yup.InferType<typeof validationSchema>;

@@ -1,11 +1,22 @@
-import { Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
-import { ExternalLayout } from '@frontend/layouts';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { Button, Stack, Typography } from '@mui/material';
 
 export default function NotFoundPage() {
+  const navigate = useNavigate();
+
   return (
-    <ExternalLayout>
+    <Stack>
       <Typography variant="h5">Page Not Found</Typography>
-    </ExternalLayout>
+
+      <Button
+        variant="text"
+        onClick={() => navigate(-1)}
+        startIcon={<ArrowBackIcon />}
+      >
+        Go Back
+      </Button>
+    </Stack>
   );
 }

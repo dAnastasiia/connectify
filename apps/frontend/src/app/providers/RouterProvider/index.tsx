@@ -59,8 +59,8 @@ export default function RouterProvider() {
     },
 
     {
-      path: '*',
-      element: <NotFoundPage />,
+      element: <ExternalLayout />,
+      children: [{ path: '*', element: <NotFoundPage /> }],
     },
   ]);
 }
