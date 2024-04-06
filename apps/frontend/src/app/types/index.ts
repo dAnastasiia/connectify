@@ -44,6 +44,11 @@ export interface ILogin {
   password: string;
 }
 
+export interface ILoginResponse {
+  accessToken: string;
+  userId: string;
+}
+
 export interface ISignup extends ILogin {
   name: string;
 }

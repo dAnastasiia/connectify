@@ -12,9 +12,10 @@ import LoadingButton from '@frontend/ui-kit/LoadingButton';
 import { login } from '@frontend/api/auth';
 import { Routes } from '@frontend/constants/Routes';
 import useNotifications from '@frontend/hooks/useNotifications';
-import { CustomError, ILogin } from '@frontend/types';
+import { CustomError, ILogin, ILoginResponse } from '@frontend/types';
 
 import { formParams } from './helpers';
+import { LOCAL_STORAGE_KEYS } from '@frontend/utils/constants';
 
 export default function LoginForm() {
   const navigate = useNavigate();
@@ -26,7 +27,9 @@ export default function LoginForm() {
 
   const { mutate, isPending } = useMutation({
     mutationFn: login,
-    onSuccess: () => {
+    onSuccess: ({ accessToken }: ILoginResponse) => {
+      localStorage.setItem(LOCAL_STORAGE_KEYS.accessToken, accessToken);
+
       navigate(`/${feed.baseRoutes.URL}/${posts.baseRoutes.URL}`);
     },
     onError: (error: CustomError) => handleError(error),
