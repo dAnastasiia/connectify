@@ -1,3 +1,5 @@
+import { ReactNode } from 'react';
+
 export interface PageableResponse<T> {
   data: T[];
   pageNumber: number;
@@ -16,6 +18,12 @@ export interface CustomError {
   errors?: { [key: string]: string }[];
 }
 
+export interface ContextProps<T> {
+  data: T;
+  refetch: () => void;
+  children?: ReactNode;
+}
+
 export interface ICreatePost {
   title: string;
   content: string;
@@ -27,7 +35,7 @@ export interface IUpdatePost {
   title: string;
   content: string;
   imageUrl: string;
-  image: File | null;
+  image?: File | null;
 }
 
 export interface IUser {

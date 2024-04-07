@@ -11,6 +11,7 @@ interface AuthProps {
   handleLogin: (data: ILogin) => void;
   handleLogout: () => void;
   isAuth: boolean;
+  userId: string;
   isLoading: boolean;
 }
 
@@ -22,16 +23,20 @@ export default function AuthProvider({ children }: PropsWithChildren) {
   );
 
   const [isAuth, setIsAuth] = useState(!!accessToken);
+  const [userId, setUserId] = useState('');
 
   const { handleError } = useNotifications();
   const onError = (error: CustomError) => handleError(error);
 
   const { mutate: handleLogin, isPending: isLoginLoading } = useMutation({
     mutationFn: login,
-    onSuccess: ({ accessToken }: ILoginResponse) => {
+    onSuccess: ({ accessToken, userId }: ILoginResponse) => {
       setIsAuth(true);
       setAccessToken(accessToken);
       localStorage.setItem(LOCAL_STORAGE_KEYS.accessToken, accessToken);
+
+      setUserId(userId);
+      localStorage.setItem(LOCAL_STORAGE_KEYS.userId, userId);
     },
     onError,
   });
@@ -51,6 +56,7 @@ export default function AuthProvider({ children }: PropsWithChildren) {
     handleLogin,
     handleLogout,
     isAuth,
+    userId,
     isLoading,
   };
 

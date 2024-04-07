@@ -22,11 +22,7 @@ import { CustomError, ICreatePost } from '@frontend/types';
 
 import { formParams } from './helpers';
 
-interface CreatePostProps {
-  onCreate: () => void;
-}
-
-export default function CreatePost({ onCreate }: CreatePostProps) {
+export default function CreatePost() {
   const form = useForm(formParams);
   const { handleSuccess, handleError } = useNotifications();
 
@@ -42,7 +38,6 @@ export default function CreatePost({ onCreate }: CreatePostProps) {
     onSuccess: () => {
       handleSuccess('Post created');
       handleClose();
-      onCreate();
     },
     onError: (error: CustomError) => handleError(error),
   });

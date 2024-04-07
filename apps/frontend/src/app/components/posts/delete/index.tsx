@@ -64,7 +64,7 @@ export default function DeletePost() {
           </Button>
 
           <LoadingButton
-            label="Update"
+            label="Delete"
             loading={isPending}
             onClick={handleSubmit}
           />

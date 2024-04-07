@@ -1,3 +1,5 @@
+import cors from 'cors';
+import { createServer } from 'http';
 import path from 'path';
 
 import bodyParser from 'body-parser';
@@ -7,6 +9,8 @@ import multer from 'multer';
 
 import authRoutes from './routes/auth';
 import feedRoutes from './routes/feed';
+
+import socket from './socket';
 
 import { environment } from './environments/environment';
 
@@ -37,12 +41,13 @@ app.use(multer({ storage, fileFilter }).single('image'));
 app.use('/images', express.static(imagesLocation));
 
 // * Setup special headers to avoid CORS error
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*'); // wildcard (*)
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST,PUT, PATCH, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  next();
-});
+app.use(
+  cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  })
+);
 
 app.use('/posts', feedRoutes);
 app.use('/auth', authRoutes);
@@ -59,9 +64,16 @@ app.use((error, req, res, next) => {
 
 mongoose
   .connect(uriDb)
-  .then(() =>
-    app.listen(port, host, () =>
-      console.log(`Running on http://${host}:${port}`)
-    )
-  )
+  .then(() => {
+    const server = createServer(app);
+    const io = socket.init(server);
+
+    io.on('connection', (socket) => {
+      console.log('a user connected');
+    });
+
+    server.listen(port, host, () => {
+      console.log(`Running on http://${host}:${port}`);
+    });
+  })
   .catch((err) => console.error(err));

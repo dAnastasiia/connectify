@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { io } from 'socket.io-client';
+
+import { useEffect, useState } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 
@@ -7,12 +9,16 @@ import { Box, Grid, Pagination, Stack, Typography } from '@mui/material';
 import PageWrapper from '@frontend/ui-kit/PageWrapper';
 
 import { getPosts } from '@frontend/api/posts';
+import useAuth from '@frontend/hooks/useAuth';
 import { CustomError, IPost, PageableResponse } from '@frontend/types';
 
 import Post from '../card';
 import CreatePost from '../create';
 
+import { environment } from '../../../../environments/environment';
+
 export default function PostFeed() {
+  const { userId } = useAuth();
   const [page, setPage] = useState(1);
 
   const { data, isLoading, refetch, error } = useQuery<
@@ -23,7 +29,21 @@ export default function PostFeed() {
     queryFn: () => getPosts(page),
   });
 
-  const posts = data?.data;
+  useEffect(() => {
+    const socket = io(environment.API_URL);
+
+    socket.on('posts', ({ action, post }) => {
+      const isCurrentUserPost = userId === post.author._id;
+
+      if (!isCurrentUserPost) refetch();
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  const posts = data?.data || [];
   const totalCount = data?.totalCount || 0;
   const pageSize = data?.pageSize || 1;
 
@@ -33,7 +53,7 @@ export default function PostFeed() {
     <PageWrapper isLoading={isLoading} error={error}>
       <Stack>
         <Box mb={3}>
-          <CreatePost onCreate={refetch} />
+          <CreatePost />
         </Box>
 
         {totalCount ? (

@@ -1,8 +1,11 @@
-import { ValidationMode } from 'react-hook-form';
+import * as yup from 'yup';
+
 import { yupResolver } from '@hookform/resolvers/yup';
+import { ValidationMode } from 'react-hook-form';
+
+import { IPost } from '@frontend/types';
 
 import validationSchema from './validationShema';
-import { IPost } from '@frontend/types';
 
 export const formParams = (data?: IPost) => {
   return {
@@ -15,3 +18,5 @@ export const formParams = (data?: IPost) => {
     },
   };
 };
+
+export type IUpdatePostForm = yup.InferType<typeof validationSchema>;

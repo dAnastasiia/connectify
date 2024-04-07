@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import { useMutation } from '@tanstack/react-query';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -17,18 +17,20 @@ import { FormInput, PhotoInput } from '@frontend/ui-kit/CustomInputs';
 import LoadingButton from '@frontend/ui-kit/LoadingButton';
 
 import { updatePost } from '@frontend/api/posts';
+import { PostContext } from '@frontend/contexts/PostContext';
 import useNotifications from '@frontend/hooks/useNotifications';
-import { CustomError, ICreatePost, IPost, IUpdatePost } from '@frontend/types';
+import { CustomError, IUpdatePost } from '@frontend/types';
 
-import { formParams } from './helpers';
+import { formParams, IUpdatePostForm } from './helpers';
 
-interface UpdatePostProps {
-  data?: IPost;
-  onSuccess: () => void;
-}
+export default function UpdatePost() {
+  const { data } = useContext(PostContext);
 
-export default function UpdatePost({ data, onSuccess }: UpdatePostProps) {
   const form = useForm(formParams(data));
+  useEffect(() => {
+    form.reset(data); // * Update form values when data changes
+  }, [data]);
+
   const { handleSuccess, handleError } = useNotifications();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -43,12 +45,12 @@ export default function UpdatePost({ data, onSuccess }: UpdatePostProps) {
     onSuccess: () => {
       handleSuccess('Post updated');
       handleClose();
-      onSuccess();
+      // onSuccess(); // * remove due to using sockets for update
     },
     onError: (error: CustomError) => handleError(error),
   });
 
-  const handleSubmit = (formData: ICreatePost) => {
+  const handleSubmit = (formData: IUpdatePostForm) => {
     const id = data?._id || '';
     const imageUrl = data?.imageUrl || '';
     const dataObj: IUpdatePost = { id, ...formData, imageUrl };
