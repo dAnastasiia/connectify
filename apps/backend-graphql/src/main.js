@@ -1,5 +1,4 @@
 import cors from 'cors';
-import { createServer } from 'http';
 import path from 'path';
 
 import bodyParser from 'body-parser';
@@ -7,10 +6,10 @@ import express from 'express';
 import mongoose from 'mongoose';
 import multer from 'multer';
 
-import authRoutes from './routes/auth';
-import feedRoutes from './routes/feed';
+import { createHandler } from 'graphql-http/lib/use/express';
 
-import socket from './socket';
+import { schema } from './graphql/schema';
+import resolvers from './graphql/resolvers';
 
 import { environment } from './environments/environment';
 
@@ -49,8 +48,13 @@ app.use(
   })
 );
 
-app.use('/posts', feedRoutes);
-app.use('/auth', authRoutes);
+app.all(
+  '/graphql',
+  createHandler({
+    schema,
+    rootValue: resolvers,
+  })
+);
 
 // * Errors handler
 app.use((error, req, res, next) => {
@@ -64,16 +68,9 @@ app.use((error, req, res, next) => {
 
 mongoose
   .connect(uriDb)
-  .then(() => {
-    const server = createServer(app);
-    const io = socket.init(server);
-
-    io.on('connection', (socket) => {
-      console.log('a user connected');
-    });
-
-    server.listen(port, host, () => {
+  .then(() =>
+    app.listen(port, host, () => {
       console.log(`Running on http://${host}:${port}`);
-    });
-  })
+    })
+  )
   .catch((err) => console.error(err));
