@@ -57,7 +57,7 @@ export const useSignup = ({
   });
 
   useEffect(() => {
-    if (isSuccess) {
+    if (data && isSuccess) {
       onSuccess();
     }
   }, [isSuccess, onSuccess]);
