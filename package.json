@@ -5,7 +5,7 @@
   "scripts": {
     "start": "nx serve frontend",
     "startBE": "nx serve backend",
-    "test": "nx run-many --target=test --projects=backend,frontend --passWithNoTests"
+    "test": "vitest"
   },
   "private": true,
   "dependencies": {
