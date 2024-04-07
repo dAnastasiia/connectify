@@ -3,7 +3,10 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { Link, Stack } from '@mui/material';
 
 import AuthForm from '@frontend-graphql/ui-kit/AuthForm';
-import { FormInput } from '@frontend-graphql/ui-kit/CustomInputs';
+import {
+  FormInput,
+  PasswordInput,
+} from '@frontend-graphql/ui-kit/CustomInputs';
 import LoadingButton from '@frontend-graphql/ui-kit/LoadingButton';
 
 import { Routes } from '@frontend-graphql/constants/Routes';
@@ -25,8 +28,13 @@ export default function LoginForm() {
           component="form"
           onSubmit={form.handleSubmit(handleLogin)}
         >
-          <FormInput label="Email" name="email" />
-          <FormInput label="Password" name="password" type="password" />
+          <FormInput label="Email" name="email" autoComplete="current-email" />
+          <PasswordInput
+            label="Password"
+            name="password"
+            type="password"
+            autoComplete="current-password"
+          />
 
           <LoadingButton label="Log in" fullWidth loading={isLoading} />
 

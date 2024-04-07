@@ -1,15 +1,17 @@
 import { useNavigate } from 'react-router-dom';
 
-import { useMutation } from '@tanstack/react-query';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import { Link, Stack } from '@mui/material';
 
 import AuthForm from '@frontend-graphql/ui-kit/AuthForm';
-import { FormInput } from '@frontend-graphql/ui-kit/CustomInputs';
+import {
+  FormInput,
+  PasswordInput,
+} from '@frontend-graphql/ui-kit/CustomInputs';
 import LoadingButton from '@frontend-graphql/ui-kit/LoadingButton';
 
-import { signup } from '@frontend-graphql/api/auth';
+import { useSignup } from '@frontend-graphql/api/auth';
 import { Routes } from '@frontend-graphql/constants/Routes';
 import useNotifications from '@frontend-graphql/hooks/useNotifications';
 import { CustomError } from '@frontend-graphql/types';
@@ -20,17 +22,16 @@ export default function SignupForm() {
   const navigate = useNavigate();
 
   const form = useForm(formParams);
-  const { handleSuccess, handleError } = useNotifications();
+  const { handleSuccess, handleErrors } = useNotifications();
 
   const { login } = Routes;
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: signup,
+  const { mutate, isPending } = useSignup({
     onSuccess: () => {
-      handleSuccess("You're succesfully signed up");
       navigate(`/${login.baseRoutes.URL}`);
+      handleSuccess("You're succesfully signed up");
     },
-    onError: (error: CustomError) => handleError(error),
+    onError: (errors: CustomError[]) => handleErrors(errors),
   });
 
   const handleSubmit = (data: ISignupForm) => {
@@ -48,13 +49,13 @@ export default function SignupForm() {
         >
           <FormInput label="Name" name="name" autoComplete="full-name" />
           <FormInput label="Email" name="email" autoComplete="email" />
-          <FormInput
+          <PasswordInput
             label="Password"
             name="password"
             type="password"
             autoComplete="new-password"
           />
-          <FormInput
+          <PasswordInput
             label="Confirm password"
             name="passwordConfirmation"
             type="password"
