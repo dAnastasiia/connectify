@@ -25,6 +25,7 @@
     "express-validator": "^7.0.1",
     "graphql": "^16.8.1",
     "graphql-http": "^1.22.0",
+    "graphql-request": "^6.1.0",
     "jsonwebtoken": "^9.0.2",
     "luxon": "^3.4.4",
     "mongoose": "^8.2.4",
@@ -37,6 +38,7 @@
     "socket.io": "^4.7.5",
     "socket.io-client": "^4.7.5",
     "tslib": "^2.3.0",
+    "validator": "^13.11.0",
     "yup": "^1.4.0"
   },
   "devDependencies": {
