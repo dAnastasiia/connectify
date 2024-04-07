@@ -8,7 +8,7 @@ import multer from 'multer';
 
 import { createHandler } from 'graphql-http/lib/use/express';
 
-import { schema } from './graphql/schema';
+import { schema, newSchema } from './graphql/schema';
 import resolvers from './graphql/resolvers';
 
 import { environment } from './environments/environment';
@@ -51,20 +51,21 @@ app.use(
 app.all(
   '/graphql',
   createHandler({
-    schema,
-    rootValue: resolvers,
+    //  schema,
+    //  rootValue: resolvers,
+    schema: newSchema,
+    // * Errors handler for GraphQL
+    formatError(err) {
+      const originalError = err.originalError;
+
+      const status = originalError.statusCode || 500;
+      const message = originalError.message || 'An error occured';
+      const errors = originalError.data;
+
+      return { message, status, errors };
+    },
   })
 );
-
-// * Errors handler
-app.use((error, req, res, next) => {
-  console.error('Error handler: ', error);
-  const status = error.statusCode || 500;
-  const message = error.message;
-  const errors = error.data;
-
-  res.status(status).json({ message, status, errors });
-});
 
 mongoose
   .connect(uriDb)

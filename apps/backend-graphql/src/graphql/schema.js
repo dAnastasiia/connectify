@@ -1,39 +1,137 @@
 // Queries, invitations, types for GraphQL service
-import { buildSchema } from 'graphql';
+import {
+  buildSchema,
+  GraphQLID,
+  GraphQLInputObjectType,
+  GraphQLList,
+} from 'graphql';
 
-// * if no ! will be return an error for the wrong type
+import {
+  GraphQLSchema,
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLInt,
+} from 'graphql';
 
+import { newSchemaResolvers } from './resolvers';
+
+// * ----------- OLD SYNTAX -----------
+// if no "!" will be return an error for the wrong type
 export const schema = buildSchema(`
-   type TestData {
-      text: String!
-      views: Int!
+   type Post {
+      _id: ID!
+      title: String!
+      cpntent: String!
+      imageUrl: String!
+      author: User!
+      createdAt: String!
+      updatedAt: String!
+   }
+
+   type User {
+      _id: ID!
+      name: String!
+      email: String!
+      password: String
+      status: String!
+      posts: [Post!]!
+   }
+
+   input SignupInput {
+      name: String!
+      email: String!
+      password: String!
    }
 
    type RootQuery {
-      hello: TestData!
+      hello: String
+   }
+
+   type RootMutation {
+      signup(inputData: SignupInput): User!
    }
 
    schema {
       query: RootQuery
+      mutation: RootMutation
    }
 `);
-// import { GraphQLSchema, GraphQLObjectType, GraphQLString } from 'graphql';
 
-// /**
-//  * Construct a GraphQL schema and define the necessary resolvers.
-//  *
-//  * type Query {
-//  *   hello: String
-//  * }
-//  */
-// export const schema = new GraphQLSchema({
-//   query: new GraphQLObjectType({
-//     name: 'Query',
-//     fields: {
-//       hello: {
-//         type: GraphQLString,
-//         resolve: () => 'world',
-//       },
-//     },
-//   }),
-// });
+// * ----------- NEW SYNTAX -----------
+// Define the Post type
+var PostType = new GraphQLObjectType({
+  name: 'Post',
+  fields: () => ({
+    _id: { type: GraphQLID },
+    title: { type: GraphQLString },
+    content: { type: GraphQLString },
+    imageUrl: { type: GraphQLString },
+    author: {
+      type: UserType,
+      resolve: newSchemaResolvers.getUserById,
+    },
+    createdAt: { type: GraphQLString },
+    updatedAt: { type: GraphQLString },
+  }),
+});
+
+// Define the User type
+var UserType = new GraphQLObjectType({
+  name: 'User',
+  fields: () => ({
+    _id: { type: GraphQLID },
+    name: { type: GraphQLString },
+    email: { type: GraphQLString },
+    password: { type: GraphQLString },
+    status: { type: GraphQLString },
+    posts: {
+      type: new GraphQLList(PostType),
+      resolve: newSchemaResolvers.getPostsByUserId,
+    },
+    createdAt: { type: GraphQLString },
+    updatedAt: { type: GraphQLString },
+  }),
+});
+
+// Define the SignupInput input type
+const SignupInputType = new GraphQLInputObjectType({
+  name: 'SignupInput',
+  fields: {
+    name: { type: GraphQLString },
+    email: { type: GraphQLString },
+    password: { type: GraphQLString },
+  },
+});
+
+// Define the RootMutation type
+const RootMutationType = new GraphQLObjectType({
+  name: 'RootMutation',
+  fields: {
+    signup: {
+      type: UserType,
+      args: {
+        inputData: { type: SignupInputType },
+      },
+      resolve: newSchemaResolvers.signup,
+    },
+  },
+});
+
+// Define the RootQuery type
+const RootQueryType = new GraphQLObjectType({
+  name: 'RootQuery',
+  fields: {
+    hello: {
+      type: GraphQLString,
+      resolve: () => {
+        return 'hello';
+      },
+    },
+  },
+});
+
+// Define the schema
+export const newSchema = new GraphQLSchema({
+  query: RootQueryType,
+  mutation: RootMutationType,
+});
