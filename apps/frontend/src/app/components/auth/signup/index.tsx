@@ -6,7 +6,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { Link, Stack } from '@mui/material';
 
 import AuthForm from '@frontend/ui-kit/AuthForm';
-import { FormInput } from '@frontend/ui-kit/CustomInputs';
+import { FormInput, PasswordInput } from '@frontend/ui-kit/CustomInputs';
 import LoadingButton from '@frontend/ui-kit/LoadingButton';
 
 import { signup } from '@frontend/api/auth';
@@ -48,13 +48,13 @@ export default function SignupForm() {
         >
           <FormInput label="Name" name="name" autoComplete="full-name" />
           <FormInput label="Email" name="email" autoComplete="email" />
-          <FormInput
+          <PasswordInput
             label="Password"
             name="password"
             type="password"
             autoComplete="new-password"
           />
-          <FormInput
+          <PasswordInput
             label="Confirm password"
             name="passwordConfirmation"
             type="password"

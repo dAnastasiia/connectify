@@ -29,8 +29,8 @@
         "development": {
           "fileReplacements": [
             {
-              "replace": "apps/admin-portal/src/environments/environment.ts",
-              "with": "apps/admin-portal/src/environments/environment.ts"
+              "replace": "apps/backend/src/environments/environment.ts",
+              "with": "apps/backend/src/environments/environment.ts"
             }
           ]
         },

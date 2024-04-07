@@ -3,7 +3,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { Link, Stack } from '@mui/material';
 
 import AuthForm from '@frontend/ui-kit/AuthForm';
-import { FormInput } from '@frontend/ui-kit/CustomInputs';
+import { FormInput, PasswordInput } from '@frontend/ui-kit/CustomInputs';
 import LoadingButton from '@frontend/ui-kit/LoadingButton';
 
 import { Routes } from '@frontend/constants/Routes';
@@ -26,7 +26,7 @@ export default function LoginForm() {
           onSubmit={form.handleSubmit(handleLogin)}
         >
           <FormInput label="Email" name="email" />
-          <FormInput label="Password" name="password" type="password" />
+          <PasswordInput label="Password" name="password" type="password" />
 
           <LoadingButton label="Log in" fullWidth loading={isLoading} />
 

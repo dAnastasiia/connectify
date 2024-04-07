@@ -1,0 +1,63 @@
+{
+  "name": "backend-graphql",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/backend-graphql/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "development",
+      "options": {
+        "platform": "node",
+        "outputPath": "dist/apps/backend-graphql",
+        "format": ["cjs"],
+        "bundle": false,
+        "main": "apps/backend-graphql/src/main.js",
+        "tsConfig": "apps/backend-graphql/tsconfig.app.json",
+        "assets": ["apps/backend-graphql/src/assets"],
+        "generatePackageJson": true,
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        }
+      },
+      "configurations": {
+        "development": {
+          "fileReplacements": [
+            {
+              "replace": "apps/backend-graphql/src/environments/environment.ts",
+              "with": "apps/backend-graphql/src/environments/environment.ts"
+            }
+          ]
+        },
+        "production": {
+          "esbuildOptions": {
+            "sourcemap": false,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "backend-graphql:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "backend-graphql:build:development"
+        },
+        "production": {
+          "buildTarget": "backend-graphql:build:production"
+        }
+      }
+    }
+  }
+}
