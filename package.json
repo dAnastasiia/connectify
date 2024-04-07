@@ -5,6 +5,7 @@
   "scripts": {
     "start": "nx serve frontend",
     "startBE": "nx serve backend",
+    "startGraphql": "nx serve backend-graphql",
     "test": "vitest"
   },
   "private": true,
