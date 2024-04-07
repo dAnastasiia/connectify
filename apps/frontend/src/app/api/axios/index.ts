@@ -7,8 +7,6 @@ import { handleLogout } from './handleLogout';
 
 import { environment } from '../../../environments/environment';
 
-LOCAL_STORAGE_KEYS;
-
 const axiosInstance = axios.create({
   baseURL: environment.API_URL,
   headers: {
