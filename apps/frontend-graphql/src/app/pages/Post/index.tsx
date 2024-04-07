@@ -12,7 +12,6 @@ function WrappedComponent() {
 export default withDetailsPageWrapper<IPost>({
   WrappedComponent,
   idParam: 'postId',
-  collectionName: 'posts',
   getQuery: getPost,
   Context: PostContext,
 });

@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import {
@@ -24,12 +25,13 @@ import { CustomError, IUpdatePost } from '@frontend-graphql/types';
 import { formParams, IUpdatePostForm } from './helpers';
 
 export default function UpdatePost() {
+  const queryClient = useQueryClient();
   const { data } = useContext(PostContext);
 
   const form = useForm(formParams(data));
-  useEffect(() => {
-    form.reset(data); // * Update form values when data changes
-  }, [data]);
+  //   useEffect(() => {
+  //     form.reset(data); // * Update form values when data changes
+  //   }, [data]);
 
   const { handleSuccess, handleError } = useNotifications();
 
@@ -45,7 +47,7 @@ export default function UpdatePost() {
     onSuccess: () => {
       handleSuccess('Post updated');
       handleClose();
-      // onSuccess(); // * remove due to using sockets for update
+      queryClient.invalidateQueries({ queryKey: [data._id] });
     },
     onError: (error: CustomError) => handleError(error),
   });

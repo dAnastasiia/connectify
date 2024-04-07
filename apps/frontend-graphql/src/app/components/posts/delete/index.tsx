@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useContext, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { useMutation } from '@tanstack/react-query';
 
@@ -18,9 +18,10 @@ import { deletePost } from '@frontend-graphql/api/posts';
 import { Routes } from '@frontend-graphql/constants/Routes';
 import useNotifications from '@frontend-graphql/hooks/useNotifications';
 import { CustomError } from '@frontend-graphql/types';
+import { PostContext } from '@frontend-graphql/contexts/PostContext';
 
 export default function DeletePost() {
-  const { postId = '' } = useParams();
+  const { data } = useContext(PostContext);
 
   const navigate = useNavigate();
   const { handleSuccess, handleError } = useNotifications();
@@ -43,7 +44,7 @@ export default function DeletePost() {
     onError: (error: CustomError) => handleError(error),
   });
 
-  const handleSubmit = () => mutate(postId);
+  const handleSubmit = () => mutate(data._id);
 
   return (
     <>

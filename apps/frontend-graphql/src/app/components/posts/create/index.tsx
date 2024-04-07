@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import {
@@ -23,6 +23,7 @@ import { CustomError, ICreatePost } from '@frontend-graphql/types';
 import { formParams } from './helpers';
 
 export default function CreatePost() {
+  const queryClient = useQueryClient();
   const form = useForm(formParams);
   const { handleSuccess, handleError } = useNotifications();
 
@@ -38,6 +39,7 @@ export default function CreatePost() {
     onSuccess: () => {
       handleSuccess('Post created');
       handleClose();
+      queryClient.invalidateQueries({ queryKey: ['posts'] }); // * refetch posts
     },
     onError: (error: CustomError) => handleError(error),
   });
