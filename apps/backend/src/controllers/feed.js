@@ -3,18 +3,19 @@ import path from 'path';
 
 import { validationResult } from 'express-validator';
 
+import socket from '../socket';
+
 import Post from '../models/post';
 import User from '../models/user';
 import { createError, handleError } from '../utils/errors';
 
 export const getPosts = async (req, res, next) => {
-  const { userId: author } = req;
   const pageNumber = +req.query.page || 1;
   const pageSize = 4;
 
   try {
-    const totalCount = await Post.find({ author }).countDocuments();
-    const data = await Post.find({ author })
+    const totalCount = await Post.find().countDocuments();
+    const data = await Post.find()
       .populate('author', 'name email')
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize);
@@ -34,12 +35,6 @@ export const getPost = async (req, res, next) => {
 
     if (!post) {
       createError("Couldn't find the post", 404);
-    }
-
-    const isCreator = post.author?._id.toString() === userId;
-
-    if (!isCreator) {
-      createError('Not authorized', 403);
     }
 
     res.status(200).json({ ...post._doc });
@@ -78,6 +73,11 @@ export const createPost = async (req, res, next) => {
     user.posts.push(data);
 
     await user.save();
+
+    const post = await data.populate('author', 'name email');
+
+    // * Notify about new posts other users
+    socket.getIO().emit('posts', { action: 'create', post });
 
     res.status(201).json({
       message: 'Successfully created',
