@@ -1,3 +1,5 @@
+import { io } from 'socket.io-client';
+
 import { useEffect, useState } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
@@ -13,7 +15,7 @@ import { CustomError, IPost, PageableResponse } from '@frontend/types';
 import Post from '../card';
 import CreatePost from '../create';
 
-import { io } from 'socket.io-client';
+import { environment } from '../../../../environments/environment';
 
 export default function PostFeed() {
   const { userId } = useAuth();
@@ -28,12 +30,12 @@ export default function PostFeed() {
   });
 
   useEffect(() => {
-    const socket = io('http://localhost:8080');
+    const socket = io(environment.API_URL);
 
     socket.on('posts', ({ action, post }) => {
       const isCurrentUserPost = userId === post.author._id;
 
-      if (action === 'create' && !isCurrentUserPost) refetch();
+      if (!isCurrentUserPost) refetch();
     });
 
     return () => {
@@ -51,7 +53,7 @@ export default function PostFeed() {
     <PageWrapper isLoading={isLoading} error={error}>
       <Stack>
         <Box mb={3}>
-          <CreatePost onCreate={refetch} />
+          <CreatePost />
         </Box>
 
         {totalCount ? (

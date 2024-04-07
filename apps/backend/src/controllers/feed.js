@@ -17,6 +17,7 @@ export const getPosts = async (req, res, next) => {
     const totalCount = await Post.find().countDocuments();
     const data = await Post.find()
       .populate('author', 'name email')
+      .sort({ createdAt: -1 }) // * descending order by creation date
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize);
 
@@ -27,7 +28,6 @@ export const getPosts = async (req, res, next) => {
 };
 
 export const getPost = async (req, res, next) => {
-  const { userId } = req;
   const { postId } = req.params;
 
   try {
@@ -74,10 +74,10 @@ export const createPost = async (req, res, next) => {
 
     await user.save();
 
-    const post = await data.populate('author', 'name email');
+    //  const post = await data.populate('author', 'name email'); // ? if we push the post inside FE array instead of refetching
 
     // * Notify about new posts other users
-    socket.getIO().emit('posts', { action: 'create', post });
+    socket.getIO().emit('posts', { action: 'create', post: data });
 
     res.status(201).json({
       message: 'Successfully created',
@@ -138,6 +138,8 @@ export const updatePost = async (req, res, next) => {
 
     await post.save();
 
+    socket.getIO().emit('posts', { action: 'update', post });
+
     res.status(200).json({ message: 'Successfully updated', post: post._doc });
   } catch (error) {
     handleError(error, next);
@@ -175,6 +177,8 @@ export const deletePost = async (req, res, next) => {
 
     user.posts.pull(_id); // * remove post from user obj
     await user.save();
+
+    socket.getIO().emit('posts', { action: 'delete', post });
 
     res.status(200).json({ message: 'Successfully deleted' });
   } catch (error) {
