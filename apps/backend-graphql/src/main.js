@@ -110,6 +110,15 @@ app.all(
 mongoose
   .connect(uriDb)
   .then(() =>
+    // * Example how to start using SSL
+    // const privateKey = fs.readFileSync('server.key');
+    // const certificate = fs.readFileSync('server.cert');
+    //  https
+    //    .createServer({ key: privateKey, cert: certificate }, app)
+    //    .listen(port, host, () => {
+    //      console.log(`Running on https://${host}:${port}`);
+    //    })
+
     app.listen(port, host, () => {
       console.log(`Running on http://${host}:${port}`);
     })

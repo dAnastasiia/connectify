@@ -43,3 +43,4 @@ Thumbs.db
 # Sensitive files
 .env*
 access.log
+server.*
