@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
   QueryFunction,
@@ -57,10 +57,27 @@ export const useGraphQLQuery = <T>({
   queryKey,
   queryFn,
 }: UseGraphQLQueryProps<T>) => {
-  const { data, isLoading, error, refetch } = useQuery<T, CustomError>({
+  const { data, isLoading, error, refetch } = useQuery<T>({
     queryKey,
     queryFn,
   });
 
-  return { data, isLoading, error, refetch };
+  const [parsedError, setParsedError] = useState<CustomError | null>(null);
+
+  useEffect(() => {
+    if (error) {
+      const errors = (error as ClientError).response.errors;
+
+      if (errors?.length) {
+        setParsedError(errors[0]);
+      } else {
+        const genericErrors = handleGenericError();
+        setParsedError(genericErrors[0]);
+      }
+    } else {
+      setParsedError(null); // Clear error when no error is present
+    }
+  }, [error]);
+
+  return { data, isLoading, error: parsedError, refetch };
 };

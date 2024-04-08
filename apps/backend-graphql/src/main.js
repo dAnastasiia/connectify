@@ -67,7 +67,7 @@ app.put('/post-image', (req, res, next) => {
   }
 
   const filePath = file ? file.path.split('\\').slice(1).join('/') : oldPath;
-  if (oldPath !== filePath) {
+  if (oldPath && oldPath !== filePath) {
     // ! -- Temporary fix
     const filePath = path.join('tmp', oldPath);
     fs.unlink(filePath, (err) => {

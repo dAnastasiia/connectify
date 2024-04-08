@@ -1,6 +1,7 @@
 // Queries, invitations, types for GraphQL service
 import {
   GraphQLBoolean,
+  GraphQLID,
   GraphQLInt,
   GraphQLObjectType,
   GraphQLSchema,
@@ -54,6 +55,13 @@ const RootMutationType = new GraphQLObjectType({
         inputData: { type: UpdatePostInputType },
       },
       resolve: resolvers.updatePost,
+    },
+    deletePost: {
+      type: GraphQLBoolean,
+      args: {
+        id: { type: GraphQLID },
+      },
+      resolve: resolvers.deletePost,
     },
   },
 });

@@ -1,5 +1,4 @@
 import { gql } from 'graphql-request';
-import graphQLClient from './graphql';
 
 import { QueryKey } from '@tanstack/react-query';
 
@@ -7,8 +6,6 @@ import {
   useGraphQLMutation,
   useGraphQLQuery,
 } from '@frontend-graphql/hooks/useGraphQL';
-
-import axios from './axios';
 import {
   PageableResponse,
   IPost,
@@ -16,6 +13,9 @@ import {
   IUpdatePost,
   CustomError,
 } from '@frontend-graphql/types';
+
+import graphQLClient from './graphql';
+import axios from './axios';
 
 const path = 'posts';
 
@@ -186,24 +186,26 @@ export const useUpdatePost = ({
   return { mutate, isPending };
 };
 
-export const updatePost = async (data: IUpdatePost) => {
-  const { id, title, content, image, imageUrl } = data;
+export const useDeletePost = ({
+  onSuccess,
+  onError,
+}: {
+  onSuccess: () => void;
+  onError: (errors: CustomError[]) => void;
+}) => {
+  const { mutate, isPending } = useGraphQLMutation({
+    mutationFn: async (id: string) => {
+      const { deletePost } = await graphQLClient.request(gql`
+        mutation {
+          deletePost(id: "${id}")
+        }
+      `);
 
-  const formData = new FormData();
-  formData.append('title', title);
-  formData.append('content', content);
-  formData.append('imageUrl', imageUrl);
-
-  if (image) {
-    formData.append('image', image);
-  }
-
-  await axios.put(`${path}/${id}`, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
+      return deletePost;
     },
+    onSuccess,
+    onError,
   });
-};
 
-export const deletePost = async (id: string) =>
-  await axios.delete(`${path}/${id}`);
+  return { mutate, isPending };
+};

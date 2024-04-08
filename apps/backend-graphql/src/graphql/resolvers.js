@@ -1,4 +1,7 @@
 // Logic to handle incoming queries
+import fs from 'fs';
+import path from 'path';
+
 import bcrypt from 'bcrypt';
 import validator from 'validator';
 import jwt from 'jsonwebtoken';
@@ -186,6 +189,38 @@ export default {
       createdAt: data.createdAt.toISOString(),
       updatedAt: data.updatedAt.toISOString(),
     };
+  },
+
+  deletePost: async function (parent, { id }, { req }) {
+    const userId = req.raw.userId;
+    if (!userId) {
+      createError('Not authenticated', 401);
+    }
+
+    const post = await Post.findById(id);
+    if (!post) {
+      createError("Couldn't find the post", 404);
+    }
+
+    const isCreator = post.author?.toString() === userId;
+    if (!isCreator) {
+      createError('Not authorized', 403);
+    }
+
+    await Post.deleteOne({ _id: id });
+
+    const filePath = path.join('tmp', post.imageUrl);
+    fs.unlink(filePath, (err) => {
+      if (err) {
+        throw err;
+      }
+    });
+
+    const user = await User.findById(userId);
+    user.posts.pull(id);
+    await user.save();
+
+    return true;
   },
 
   getPosts: async function (parent, { page }, { req }) {
