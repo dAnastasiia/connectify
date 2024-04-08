@@ -8,8 +8,7 @@ import multer from 'multer';
 
 import { createHandler } from 'graphql-http/lib/use/express';
 
-import { schema, newSchema } from './graphql/schema';
-import resolvers from './graphql/resolvers';
+import schema from './graphql/schema';
 
 import { environment } from './environments/environment';
 
@@ -51,9 +50,8 @@ app.use(
 app.all(
   '/graphql',
   createHandler({
-    //  schema,
-    //  rootValue: resolvers,
-    schema: newSchema,
+    schema,
+
     // * Errors handler for GraphQL
     formatError(err) {
       const originalError = err.originalError;
