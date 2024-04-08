@@ -13,9 +13,10 @@ import {
   LoginInputType,
   SignupInputType,
   UserType,
-  PostInputType,
   PostType,
   PostsType,
+  CreatePostInputType,
+  UpdatePostInputType,
 } from './types';
 
 // Define the RootMutation type
@@ -43,9 +44,16 @@ const RootMutationType = new GraphQLObjectType({
     createPost: {
       type: PostType,
       args: {
-        inputData: { type: PostInputType },
+        inputData: { type: CreatePostInputType },
       },
       resolve: resolvers.createPost,
+    },
+    updatePost: {
+      type: PostType,
+      args: {
+        inputData: { type: UpdatePostInputType },
+      },
+      resolve: resolvers.updatePost,
     },
   },
 });
@@ -54,10 +62,6 @@ const RootMutationType = new GraphQLObjectType({
 const RootQueryType = new GraphQLObjectType({
   name: 'RootQuery',
   fields: {
-    hello: {
-      type: GraphQLString,
-      resolve: () => 'hello',
-    },
     getPosts: {
       type: PostsType,
       args: {

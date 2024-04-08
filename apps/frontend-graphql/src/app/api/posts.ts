@@ -153,10 +153,10 @@ export const useUpdatePost = ({
 
       if (image) {
         formData.append('image', image);
-        formData.append('oldPath', oldImageUrl);
       }
+      formData.append('oldPath', oldImageUrl);
 
-      const response = await axios.put(`post-image`, formData, {
+      const response = await axios.put('post-image', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -164,9 +164,9 @@ export const useUpdatePost = ({
 
       const imageUrl = response.data.filePath;
 
-      const { createPost } = await graphQLClient.request(gql`
+      const { updatePost } = await graphQLClient.request(gql`
              mutation { 
-               createPost(inputData: { title: "${title}", content: "${content}", imageUrl: "${imageUrl}" }) { 
+               updatePost(inputData: { id: "${id}", title: "${title}", content: "${content}", imageUrl: "${imageUrl}" }) { 
                  _id
                  title
                  author {
@@ -177,7 +177,7 @@ export const useUpdatePost = ({
              }
            `);
 
-      return createPost;
+      return updatePost;
     },
     onSuccess,
     onError,

@@ -50,7 +50,7 @@ app.use(
 );
 
 // * Middleware to handle tokens
-app.use(auth); 
+app.use(auth);
 
 // * REST API endpoint to work with images due to GraphQL only can use JSON format
 app.put('/post-image', (req, res, next) => {
@@ -61,12 +61,13 @@ app.put('/post-image', (req, res, next) => {
   }
 
   const file = req.file;
-  if (!file) {
+  const oldPath = req.body.oldPath;
+  if (!file && !oldPath) {
     return res.status(200).json({ message: 'No file provided' });
   }
 
-  const oldPath = req.body.oldPath;
-  if (oldPath) {
+  const filePath = file ? file.path.split('\\').slice(1).join('/') : oldPath;
+  if (oldPath !== filePath) {
     // ! -- Temporary fix
     const filePath = path.join('tmp', oldPath);
     fs.unlink(filePath, (err) => {
@@ -76,8 +77,6 @@ app.put('/post-image', (req, res, next) => {
     });
     // ! --
   }
-
-  const filePath = file.path.split('\\').slice(1).join('/'); // ! Temporary fix
 
   return res.status(201).json({ message: 'File stored', filePath });
 });

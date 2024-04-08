@@ -9,9 +9,19 @@ import {
 
 import resolvers from '../resolvers';
 
-export const PostInputType = new GraphQLInputObjectType({
-  name: 'PostInput',
+export const CreatePostInputType = new GraphQLInputObjectType({
+  name: 'CreatePostInput',
   fields: {
+    title: { type: GraphQLString },
+    content: { type: GraphQLString },
+    imageUrl: { type: GraphQLString },
+  },
+});
+
+export const UpdatePostInputType = new GraphQLInputObjectType({
+  name: 'UpdatePostInput',
+  fields: {
+    id: { type: GraphQLID },
     title: { type: GraphQLString },
     content: { type: GraphQLString },
     imageUrl: { type: GraphQLString },
