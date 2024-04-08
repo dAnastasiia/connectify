@@ -18,14 +18,19 @@ export const useSignup = ({
 }) => {
   const { mutate, isPending } = useGraphQLMutation({
     mutationFn: async ({ name, email, password }: ISignup) => {
-      const { signup } = await graphQLClient.request(gql`
-           mutation { 
-             signup(inputData: { name: "${name}", email: "${email}", password: "${password}" }) { 
-               name
-               email 
-             } 
-           }
-         `);
+      const { signup } = await graphQLClient.request(
+        gql`
+          mutation Signup($name: String!, $email: String!, $password: String!) {
+            signup(
+              inputData: { name: $name, email: $email, password: $password }
+            ) {
+              name
+              email
+            }
+          }
+        `,
+        { name, email, password } // * Another suntax how to use dynamic data
+      );
 
       return signup;
     },
@@ -45,14 +50,17 @@ export const useLogin = ({
 }) => {
   const { mutate, isPending } = useGraphQLMutation({
     mutationFn: async ({ email, password }: ILogin) => {
-      const { login } = await graphQLClient.request(gql`
-            mutation { 
-              login(inputData: { email: "${email}", password: "${password}" }) { 
-                accessToken
-                userId 
-              } 
+      const { login } = await graphQLClient.request(
+        gql`
+          mutation Login($email: String!, $password: String!) {
+            login(inputData: { email: $email, password: $password }) {
+              accessToken
+              userId
             }
-          `);
+          }
+        `,
+        { email, password }
+      );
 
       return login;
     },

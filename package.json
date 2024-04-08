@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "start": "nx serve frontend",
-    "startBE": "nx serve backend",
+    "startBe": "nx serve backend",
     "startFeGraphql": "nx serve frontend-graphql",
     "startBeGraphql": "nx serve backend-graphql",
     "test": "vitest"
