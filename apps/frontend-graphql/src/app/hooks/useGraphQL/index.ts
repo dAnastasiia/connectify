@@ -26,7 +26,7 @@ export default function useGraphQL<T, P>({
     if (data && isSuccess) {
       onSuccess(data);
     }
-  }, [isSuccess, onSuccess, data]);
+  }, [isSuccess, data]);
 
   useEffect(() => {
     if (error) {
@@ -38,7 +38,7 @@ export default function useGraphQL<T, P>({
         onError(handleGenericError());
       }
     }
-  }, [error, onError]);
+  }, [error]);
 
   return { mutate, isPending };
 }
