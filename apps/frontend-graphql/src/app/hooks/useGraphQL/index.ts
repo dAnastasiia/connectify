@@ -1,7 +1,7 @@
-import { ClientError } from 'graphql-request';
 import { useEffect } from 'react';
 
 import { useMutation } from '@tanstack/react-query';
+import { ClientError } from 'graphql-request';
 
 import { CustomError } from '@frontend-graphql/types';
 
@@ -11,18 +11,15 @@ interface UseGraphQLProps<T, P> {
   mutationFn: (data: T) => Promise<P>;
   onSuccess: (data: P) => void;
   onError: (errors: CustomError[]) => void;
-  mutationKey?: unknown[];
 }
 
 export default function useGraphQL<T, P>({
   onSuccess,
   onError,
   mutationFn,
-  mutationKey,
 }: UseGraphQLProps<T, P>) {
   const { mutate, isPending, isSuccess, data, error } = useMutation({
     mutationFn,
-    mutationKey,
   });
 
   useEffect(() => {
