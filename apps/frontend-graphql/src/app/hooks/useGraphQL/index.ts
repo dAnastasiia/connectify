@@ -57,10 +57,10 @@ export const useGraphQLQuery = <T>({
   queryKey,
   queryFn,
 }: UseGraphQLQueryProps<T>) => {
-  const { data, isLoading, error } = useQuery<T, CustomError>({
+  const { data, isLoading, error, refetch } = useQuery<T, CustomError>({
     queryKey,
     queryFn,
   });
 
-  return { data, isLoading, error };
+  return { data, isLoading, error, refetch };
 };

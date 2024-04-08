@@ -7,22 +7,6 @@ import Post from '../models/post';
 import User from '../models/user';
 import { createError, handleError } from '../utils/errors';
 
-export const getPost = async (req, res, next) => {
-  const { postId } = req.params;
-
-  try {
-    const post = await Post.findById(postId).populate('author', 'name email');
-
-    if (!post) {
-      createError("Couldn't find the post", 404);
-    }
-
-    res.status(200).json({ ...post._doc });
-  } catch (error) {
-    handleError(error, next);
-  }
-};
-
 export const updatePost = async (req, res, next) => {
   const { userId } = req;
   const { postId } = req.params;

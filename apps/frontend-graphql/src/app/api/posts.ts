@@ -36,6 +36,7 @@ export const useGetPosts = ({
               _id
               title
               content
+              imageUrl
               author {
                 name
               }
@@ -55,10 +56,37 @@ export const useGetPosts = ({
   return { data, isLoading, error };
 };
 
-export const getPost = async (id: string) => {
-  const response = await axios.get(`${path}/${id}`);
+export const useGetPost = ({
+  queryKey,
+  id,
+}: {
+  queryKey: QueryKey;
+  id: string;
+}) => {
+  const { data, isLoading, error, refetch } = useGraphQLQuery<IPost>({
+    queryKey,
+    queryFn: async () => {
+      const { getPost } = await graphQLClient.request(gql`
+         query {
+           getPost (id: "${id}") {             
+               _id
+               title
+               content
+               imageUrl
+               author {
+                 name
+               }
+               createdAt
+               updatedAt            
+           }
+         }
+       `);
 
-  return response.data;
+      return getPost;
+    },
+  });
+
+  return { data, isLoading, error, refetch };
 };
 
 export const useCreatePost = ({
@@ -69,10 +97,24 @@ export const useCreatePost = ({
   onError: (errors: CustomError[]) => void;
 }) => {
   const { mutate, isPending } = useGraphQLMutation({
-    mutationFn: async ({ title, content }: ICreatePost) => {
+    mutationFn: async ({ title, content, image }: ICreatePost) => {
+      const formData = new FormData();
+
+      if (image) {
+        formData.append('image', image);
+      }
+
+      const response = await axios.put(`post-image`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      const imageUrl = response.data.filePath;
+
       const { createPost } = await graphQLClient.request(gql`
             mutation { 
-              createPost(inputData: { title: "${title}", content: "${content}", imageUrl: "dummy url" }) { 
+              createPost(inputData: { title: "${title}", content: "${content}", imageUrl: "${imageUrl}" }) { 
                 _id
                 title
                 author {
@@ -82,6 +124,58 @@ export const useCreatePost = ({
               } 
             }
           `);
+
+      return createPost;
+    },
+    onSuccess,
+    onError,
+  });
+
+  return { mutate, isPending };
+};
+
+export const useUpdatePost = ({
+  onSuccess,
+  onError,
+}: {
+  onSuccess: () => void;
+  onError: (errors: CustomError[]) => void;
+}) => {
+  const { mutate, isPending } = useGraphQLMutation({
+    mutationFn: async ({
+      id,
+      title,
+      content,
+      image,
+      imageUrl: oldImageUrl,
+    }: IUpdatePost) => {
+      const formData = new FormData();
+
+      if (image) {
+        formData.append('image', image);
+        formData.append('oldPath', oldImageUrl);
+      }
+
+      const response = await axios.put(`post-image`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      const imageUrl = response.data.filePath;
+
+      const { createPost } = await graphQLClient.request(gql`
+             mutation { 
+               createPost(inputData: { title: "${title}", content: "${content}", imageUrl: "${imageUrl}" }) { 
+                 _id
+                 title
+                 author {
+                   name
+                 }
+                 createdAt
+               } 
+             }
+           `);
 
       return createPost;
     },

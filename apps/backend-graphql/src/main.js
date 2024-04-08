@@ -1,4 +1,5 @@
 import cors from 'cors';
+import fs from 'fs';
 import path from 'path';
 
 import bodyParser from 'body-parser';
@@ -8,8 +9,8 @@ import multer from 'multer';
 
 import { createHandler } from 'graphql-http/lib/use/express';
 
-import auth from './middlewares/auth';
 import schema from './graphql/schema';
+import auth from './middlewares/auth';
 
 import { environment } from './environments/environment';
 
@@ -48,7 +49,39 @@ app.use(
   })
 );
 
-app.use(auth); // * middleware to handle tokens
+// * Middleware to handle tokens
+app.use(auth); 
+
+// * REST API endpoint to work with images due to GraphQL only can use JSON format
+app.put('/post-image', (req, res, next) => {
+  const userId = req.userId;
+
+  if (!userId) {
+    createError('Not authenticated', 401);
+  }
+
+  const file = req.file;
+  if (!file) {
+    return res.status(200).json({ message: 'No file provided' });
+  }
+
+  const oldPath = req.body.oldPath;
+  if (oldPath) {
+    // ! -- Temporary fix
+    const filePath = path.join('tmp', oldPath);
+    fs.unlink(filePath, (err) => {
+      if (err) {
+        throw err;
+      }
+    });
+    // ! --
+  }
+
+  const filePath = file.path.split('\\').slice(1).join('/'); // ! Temporary fix
+
+  return res.status(201).json({ message: 'File stored', filePath });
+});
+
 app.all(
   '/graphql',
   createHandler({

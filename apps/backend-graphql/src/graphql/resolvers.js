@@ -12,6 +12,7 @@ const saltRound = +process.env.SALT_ROUND;
 const tokenSecret = `${process.env.TOKEN_SECRET}`;
 
 export default {
+  // Authentication
   signup: async function (parent, { inputData }, context) {
     const { name, email, password } = inputData;
     const errors = [];
@@ -100,6 +101,7 @@ export default {
     return true; // Indicate successful logout
   },
 
+  // Posts
   createPost: async function (parent, { inputData }, { req }) {
     const userId = req.raw.userId;
 
@@ -114,6 +116,7 @@ export default {
       errors.push({ msg: 'Invalid title' });
     if (!validator.isLength(content, { min: 5 }))
       errors.push({ msg: 'Invalid content' });
+    if (validator.isEmpty(imageUrl)) errors.push({ msg: 'No image provided' });
 
     if (errors.length) {
       createError('Data is incorrect', 422, errors);
@@ -146,7 +149,7 @@ export default {
     }
 
     const pageNumber = +page || 1;
-    const pageSize = 1;
+    const pageSize = 4;
 
     const totalCount = await Post.find().countDocuments();
     const data = await Post.find()
@@ -165,6 +168,27 @@ export default {
     });
 
     return { data: parsedData, pageNumber, pageSize, totalCount };
+  },
+
+  getPost: async function (parent, { id }, { req }) {
+    const userId = req.raw.userId;
+
+    if (!userId) {
+      createError('Not authenticated', 401);
+    }
+
+    const post = await Post.findById(id).populate('author', 'name email');
+
+    if (!post) {
+      createError("Couldn't find the post", 404);
+    }
+
+    return {
+      ...post._doc,
+      _id: post._id.toString(),
+      createdAt: post.createdAt.toISOString(),
+      updatedAt: post.updatedAt.toISOString(),
+    };
   },
 
   // Utils

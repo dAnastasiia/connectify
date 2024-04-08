@@ -65,6 +65,13 @@ const RootQueryType = new GraphQLObjectType({
       },
       resolve: resolvers.getPosts,
     },
+    getPost: {
+      type: PostType,
+      args: {
+        id: { type: GraphQLString },
+      },
+      resolve: resolvers.getPost,
+    },
   },
 });
 
