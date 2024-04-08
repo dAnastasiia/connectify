@@ -1,15 +1,15 @@
 import { createContext, PropsWithChildren, useState } from 'react';
 
-import { useMutation } from '@tanstack/react-query';
+import { UseMutateFunction } from '@tanstack/react-query';
 
-import { login, logout } from '@frontend-graphql/api/auth';
+import { useLogin, useLogout } from '@frontend-graphql/api/auth';
 import useNotifications from '@frontend-graphql/hooks/useNotifications';
 import { CustomError, ILogin, ILoginResponse } from '@frontend-graphql/types';
 import { LOCAL_STORAGE_KEYS } from '@frontend-graphql/utils/constants';
 
 interface AuthProps {
   handleLogin: (data: ILogin) => void;
-  handleLogout: () => void;
+  handleLogout: UseMutateFunction<any, Error, unknown, unknown>;
   isAuth: boolean;
   userId: string;
   isLoading: boolean;
@@ -25,11 +25,10 @@ export default function AuthProvider({ children }: PropsWithChildren) {
   const [isAuth, setIsAuth] = useState(!!accessToken);
   const [userId, setUserId] = useState('');
 
-  const { handleError } = useNotifications();
-  const onError = (error: CustomError) => handleError(error);
+  const { handleErrors } = useNotifications();
+  const onError = (errors: CustomError[]) => handleErrors(errors);
 
-  const { mutate: handleLogin, isPending: isLoginLoading } = useMutation({
-    mutationFn: login,
+  const { mutate: handleLogin, isPending: isLoginLoading } = useLogin({
     onSuccess: ({ accessToken, userId }: ILoginResponse) => {
       setIsAuth(true);
       setAccessToken(accessToken);
@@ -41,8 +40,7 @@ export default function AuthProvider({ children }: PropsWithChildren) {
     onError,
   });
 
-  const { mutate: handleLogout, isPending: isLogoutLoading } = useMutation({
-    mutationFn: logout,
+  const { mutate: handleLogout, isPending: isLogoutLoading } = useLogout({
     onSuccess: () => {
       setIsAuth(false);
       localStorage.clear();
