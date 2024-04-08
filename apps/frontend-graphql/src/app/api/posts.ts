@@ -1,7 +1,12 @@
 import { gql } from 'graphql-request';
 import graphQLClient from './graphql';
 
-import useGraphQL from '@frontend-graphql/hooks/useGraphQL';
+import { QueryKey } from '@tanstack/react-query';
+
+import {
+  useGraphQLMutation,
+  useGraphQLQuery,
+} from '@frontend-graphql/hooks/useGraphQL';
 
 import axios from './axios';
 import {
@@ -14,12 +19,40 @@ import {
 
 const path = 'posts';
 
-export const getPosts = async (page: number) => {
-  const response = await axios.get<PageableResponse<IPost>>(path, {
-    params: { page },
+export const useGetPosts = ({
+  queryKey,
+  page,
+}: {
+  queryKey: QueryKey;
+  page: number;
+}) => {
+  const { data, isLoading, error } = useGraphQLQuery<PageableResponse<IPost>>({
+    queryKey,
+    queryFn: async () => {
+      const { getPosts } = await graphQLClient.request(gql`
+        query {
+          getPosts (page: ${page}) {
+            data {
+              _id
+              title
+              content
+              author {
+                name
+              }
+              createdAt
+            }
+            pageNumber
+            pageSize
+            totalCount
+          }
+        }
+      `);
+
+      return getPosts;
+    },
   });
 
-  return response.data;
+  return { data, isLoading, error };
 };
 
 export const getPost = async (id: string) => {
@@ -35,7 +68,7 @@ export const useCreatePost = ({
   onSuccess: () => void;
   onError: (errors: CustomError[]) => void;
 }) => {
-  const { mutate, isPending } = useGraphQL({
+  const { mutate, isPending } = useGraphQLMutation({
     mutationFn: async ({ title, content }: ICreatePost) => {
       const { createPost } = await graphQLClient.request(gql`
             mutation { 
@@ -57,18 +90,6 @@ export const useCreatePost = ({
   });
 
   return { mutate, isPending };
-};
-export const createPost = async (data: ICreatePost) => {
-  const formData = new FormData();
-  for (const key in data) {
-    formData.append(key, data[key as keyof typeof data] ?? '');
-  }
-
-  await axios.post(path, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
 };
 
 export const updatePost = async (data: IUpdatePost) => {

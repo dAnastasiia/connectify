@@ -38,7 +38,7 @@ export default function CreatePost() {
     onSuccess: () => {
       handleSuccess('Post created');
       handleClose();
-      // queryClient.invalidateQueries({ queryKey: ['posts'] }); // * refetch posts
+      queryClient.invalidateQueries({ queryKey: ['posts'] }); // * refetch posts
     },
     onError: (errors: CustomError[]) => handleErrors(errors),
   });

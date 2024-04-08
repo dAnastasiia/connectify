@@ -1,13 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
-import { useQuery } from '@tanstack/react-query';
+import { QueryKey } from '@tanstack/react-query';
 
 import { Box, Grid, Pagination, Stack, Typography } from '@mui/material';
 
 import PageWrapper from '@frontend-graphql/ui-kit/PageWrapper';
 
-import { getPosts } from '@frontend-graphql/api/posts';
-import { CustomError, IPost, PageableResponse } from '@frontend-graphql/types';
+import { useGetPosts } from '@frontend-graphql/api/posts';
 
 import Post from '../card';
 import CreatePost from '../create';
@@ -15,12 +14,9 @@ import CreatePost from '../create';
 export default function PostFeed() {
   const [page, setPage] = useState(1);
 
-  const { data, isLoading, error } = useQuery<
-    PageableResponse<IPost>,
-    CustomError
-  >({
-    queryKey: ['posts', page],
-    queryFn: () => getPosts(page),
+  const { data, isLoading, error } = useGetPosts({
+    queryKey: ['posts', page] as QueryKey,
+    page,
   });
 
   const posts = data?.data || [];
