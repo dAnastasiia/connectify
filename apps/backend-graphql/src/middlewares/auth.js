@@ -13,6 +13,8 @@ export default async (req, res, next) => {
 
     const token = authHeader.split(' ')[1]; // get token from header value
 
+    // ? check if jwt is valid, them throw an error
+
     let decodedToken = jwt.verify(token, tokenSecret);
 
     // Potential situation where no decoded token was recognized
