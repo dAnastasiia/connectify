@@ -12,6 +12,8 @@ import {
   LoginInputType,
   SignupInputType,
   UserType,
+  PostInputType,
+  PostType,
 } from './types';
 
 // Define the RootMutation type
@@ -35,6 +37,13 @@ const RootMutationType = new GraphQLObjectType({
     logout: {
       type: GraphQLBoolean,
       resolve: resolvers.logout,
+    },
+    createPost: {
+      type: PostType,
+      args: {
+        inputData: { type: PostInputType },
+      },
+      resolve: resolvers.createPost,
     },
   },
 });

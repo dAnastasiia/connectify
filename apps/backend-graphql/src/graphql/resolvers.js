@@ -100,6 +100,49 @@ export default {
     return true; // Indicate successful logout
   },
 
+  createPost: async function (parent, { inputData }, { req }) {
+    const userId = req.raw.userId;
+
+    if (!userId) {
+      createError('Not authenticated', 401);
+    }
+
+    const { title, content, imageUrl } = inputData;
+    const errors = [];
+
+    if (!validator.isLength(title, { min: 5 }))
+      errors.push({ msg: 'Invalid title' });
+    if (!validator.isLength(content, { min: 5 }))
+      errors.push({ msg: 'Invalid content' });
+
+    if (errors.length) {
+      createError('Data is incorrect', 422, errors);
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      createError('User is not found', 404);
+    }
+
+    const data = new Post({
+      title,
+      content,
+      imageUrl,
+      author: user,
+    });
+
+    const createdPost = await data.save();
+    user.posts.push(createdPost);
+    await user.save();
+
+    return {
+      ...createdPost._doc,
+      _id: createdPost._id.toString(),
+      createdAt: createdPost.createdAt.toISOString(),
+      updatedAt: createdPost.updatedAt.toISOString(),
+    };
+  },
+
   // Utils
   getUserById: async function (parent, args, context) {
     const userId = parent.author._id;
