@@ -3,29 +3,9 @@ import path from 'path';
 
 import { validationResult } from 'express-validator';
 
-import socket from '../socket';
-
 import Post from '../models/post';
 import User from '../models/user';
 import { createError, handleError } from '../utils/errors';
-
-export const getPosts = async (req, res, next) => {
-  const pageNumber = +req.query.page || 1;
-  const pageSize = 4;
-
-  try {
-    const totalCount = await Post.find().countDocuments();
-    const data = await Post.find()
-      .populate('author', 'name email')
-      .sort({ createdAt: -1 }) // * descending order by creation date
-      .skip((pageNumber - 1) * pageSize)
-      .limit(pageSize);
-
-    res.status(200).json({ data, pageNumber, pageSize, totalCount });
-  } catch (err) {
-    handleError(error, next); // * Check if it's the server error
-  }
-};
 
 export const getPost = async (req, res, next) => {
   const { postId } = req.params;
@@ -38,51 +18,6 @@ export const getPost = async (req, res, next) => {
     }
 
     res.status(200).json({ ...post._doc });
-  } catch (error) {
-    handleError(error, next);
-  }
-};
-
-export const createPost = async (req, res, next) => {
-  const { userId } = req;
-  const errors = validationResult(req);
-  const file = req.file;
-
-  try {
-    if (!file) {
-      createError('Image is not provided', 422); // * Erors should be inside trycatch to global error handler can get it
-    }
-
-    if (!errors.isEmpty()) {
-      createError('Data is incorrect', 422, errors.array());
-    }
-
-    const imageUrl = file.path.split('\\').slice(1).join('/'); // ! Temporary fix
-    const { title, content } = req.body;
-
-    const data = new Post({
-      title,
-      content,
-      imageUrl,
-      author: userId,
-    });
-
-    await data.save();
-
-    const user = await User.findById(userId);
-    user.posts.push(data);
-
-    await user.save();
-
-    //  const post = await data.populate('author', 'name email'); // ? if we push the post inside FE array instead of refetching
-
-    // * Notify about new posts other users
-    socket.getIO().emit('posts', { action: 'create', post: data });
-
-    res.status(201).json({
-      message: 'Successfully created',
-      data,
-    });
   } catch (error) {
     handleError(error, next);
   }
@@ -138,8 +73,6 @@ export const updatePost = async (req, res, next) => {
 
     await post.save();
 
-    socket.getIO().emit('posts', { action: 'update', post });
-
     res.status(200).json({ message: 'Successfully updated', post: post._doc });
   } catch (error) {
     handleError(error, next);
@@ -177,8 +110,6 @@ export const deletePost = async (req, res, next) => {
 
     user.posts.pull(_id); // * remove post from user obj
     await user.save();
-
-    socket.getIO().emit('posts', { action: 'delete', post });
 
     res.status(200).json({ message: 'Successfully deleted' });
   } catch (error) {

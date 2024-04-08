@@ -60,9 +60,9 @@ app.all(
       console.error(err);
       const originalError = err.originalError;
 
-      const status = originalError.statusCode || 500;
-      const message = originalError.message || 'An error occured';
-      const errors = originalError.data;
+      const status = originalError?.statusCode || 500;
+      const message = originalError?.message || 'An error occured';
+      const errors = originalError?.data;
 
       return { message, status, errors };
     },

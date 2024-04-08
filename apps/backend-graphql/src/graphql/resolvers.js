@@ -135,12 +135,36 @@ export default {
     user.posts.push(createdPost);
     await user.save();
 
-    return {
-      ...createdPost._doc,
-      _id: createdPost._id.toString(),
-      createdAt: createdPost.createdAt.toISOString(),
-      updatedAt: createdPost.updatedAt.toISOString(),
-    };
+    return createdPost;
+  },
+
+  getPosts: async function (parent, { page }, { req }) {
+    const userId = req.raw.userId;
+
+    if (!userId) {
+      createError('Not authenticated', 401);
+    }
+
+    const pageNumber = +page || 1;
+    const pageSize = 1;
+
+    const totalCount = await Post.find().countDocuments();
+    const data = await Post.find()
+      .populate('author', 'name email')
+      .sort({ createdAt: -1 }) // * descending order by creation date
+      .skip((pageNumber - 1) * pageSize)
+      .limit(pageSize);
+
+    const parsedData = data.map((post) => {
+      return {
+        ...post._doc,
+        _id: post._id.toString(),
+        createdAt: post.createdAt.toISOString(), // * GraphQL doesn't parse datetime correctly, so this is a need
+        updatedAt: post.updatedAt.toISOString(),
+      };
+    });
+
+    return { data: parsedData, pageNumber, pageSize, totalCount };
   },
 
   // Utils

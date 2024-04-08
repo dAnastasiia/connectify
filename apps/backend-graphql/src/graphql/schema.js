@@ -1,6 +1,7 @@
 // Queries, invitations, types for GraphQL service
 import {
   GraphQLBoolean,
+  GraphQLInt,
   GraphQLObjectType,
   GraphQLSchema,
   GraphQLString,
@@ -14,6 +15,7 @@ import {
   UserType,
   PostInputType,
   PostType,
+  PostsType,
 } from './types';
 
 // Define the RootMutation type
@@ -55,6 +57,13 @@ const RootQueryType = new GraphQLObjectType({
     hello: {
       type: GraphQLString,
       resolve: () => 'hello',
+    },
+    getPosts: {
+      type: PostsType,
+      args: {
+        page: { type: GraphQLInt },
+      },
+      resolve: resolvers.getPosts,
     },
   },
 });

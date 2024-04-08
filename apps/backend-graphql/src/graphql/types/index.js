@@ -1,6 +1,7 @@
 import {
   GraphQLID,
   GraphQLInputObjectType,
+  GraphQLInt,
   GraphQLList,
   GraphQLObjectType,
   GraphQLString,
@@ -30,6 +31,18 @@ export const PostType = new GraphQLObjectType({
     },
     createdAt: { type: GraphQLString },
     updatedAt: { type: GraphQLString },
+  }),
+});
+
+export const PostsType = new GraphQLObjectType({
+  name: 'Posts',
+  fields: () => ({
+    data: {
+      type: new GraphQLList(PostType),
+    },
+    pageNumber: { type: GraphQLInt },
+    pageSize: { type: GraphQLInt },
+    totalCount: { type: GraphQLInt },
   }),
 });
 
