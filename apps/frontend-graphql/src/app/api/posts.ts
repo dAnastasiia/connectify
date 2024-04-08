@@ -1,9 +1,15 @@
+import { gql } from 'graphql-request';
+import graphQLClient from './graphql';
+
+import useGraphQL from '@frontend-graphql/hooks/useGraphQL';
+
 import axios from './axios';
 import {
   PageableResponse,
   IPost,
   ICreatePost,
   IUpdatePost,
+  CustomError,
 } from '@frontend-graphql/types';
 
 const path = 'posts';
@@ -22,6 +28,36 @@ export const getPost = async (id: string) => {
   return response.data;
 };
 
+export const useCreatePost = ({
+  onSuccess,
+  onError,
+}: {
+  onSuccess: () => void;
+  onError: (errors: CustomError[]) => void;
+}) => {
+  const { mutate, isPending } = useGraphQL({
+    mutationFn: async ({ title, content }: ICreatePost) => {
+      const { createPost } = await graphQLClient.request(gql`
+            mutation { 
+              createPost(inputData: { title: "${title}", content: "${content}", imageUrl: "dummy url" }) { 
+                _id
+                title
+                author {
+                  name
+                }
+                createdAt
+              } 
+            }
+          `);
+
+      return createPost;
+    },
+    onSuccess,
+    onError,
+  });
+
+  return { mutate, isPending };
+};
 export const createPost = async (data: ICreatePost) => {
   const formData = new FormData();
   for (const key in data) {

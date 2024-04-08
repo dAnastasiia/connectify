@@ -1,14 +1,13 @@
 import { gql } from 'graphql-request';
-
 import graphQLClient from './graphql';
 
+import useGraphQL from '@frontend-graphql/hooks/useGraphQL';
 import {
   CustomError,
   ILogin,
   ILoginResponse,
   ISignup,
 } from '@frontend-graphql/types';
-import useGraphQL from '@frontend-graphql/hooks/useGraphQL';
 
 export const useSignup = ({
   onSuccess,
