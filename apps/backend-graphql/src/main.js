@@ -8,6 +8,7 @@ import multer from 'multer';
 
 import { createHandler } from 'graphql-http/lib/use/express';
 
+import auth from './middlewares/auth';
 import schema from './graphql/schema';
 
 import { environment } from './environments/environment';
@@ -47,18 +48,21 @@ app.use(
   })
 );
 
+app.use(auth); // * middleware to handle tokens
 app.all(
   '/graphql',
   createHandler({
     schema,
+    context: (req, res) => ({ req }), // * pass request object to get access inside resolvers
 
     // * Errors handler for GraphQL
     formatError(err) {
+      console.error(err);
       const originalError = err.originalError;
 
-      const status = originalError.statusCode || 500;
-      const message = originalError.message || 'An error occured';
-      const errors = originalError.data;
+      const status = originalError?.statusCode || 500;
+      const message = originalError?.message || 'An error occured';
+      const errors = originalError?.data;
 
       return { message, status, errors };
     },

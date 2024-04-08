@@ -1,6 +1,7 @@
 import {
   GraphQLID,
   GraphQLInputObjectType,
+  GraphQLInt,
   GraphQLList,
   GraphQLObjectType,
   GraphQLString,
@@ -8,7 +9,15 @@ import {
 
 import resolvers from '../resolvers';
 
-// Define the Post type
+export const PostInputType = new GraphQLInputObjectType({
+  name: 'PostInput',
+  fields: {
+    title: { type: GraphQLString },
+    content: { type: GraphQLString },
+    imageUrl: { type: GraphQLString },
+  },
+});
+
 export const PostType = new GraphQLObjectType({
   name: 'Post',
   fields: () => ({
@@ -25,7 +34,18 @@ export const PostType = new GraphQLObjectType({
   }),
 });
 
-// Define the User type
+export const PostsType = new GraphQLObjectType({
+  name: 'Posts',
+  fields: () => ({
+    data: {
+      type: new GraphQLList(PostType),
+    },
+    pageNumber: { type: GraphQLInt },
+    pageSize: { type: GraphQLInt },
+    totalCount: { type: GraphQLInt },
+  }),
+});
+
 export const UserType = new GraphQLObjectType({
   name: 'User',
   fields: () => ({
@@ -43,7 +63,6 @@ export const UserType = new GraphQLObjectType({
   }),
 });
 
-// Define the AuthData input type
 export const AuthDataType = new GraphQLObjectType({
   name: 'AuthData',
   fields: {
@@ -52,7 +71,6 @@ export const AuthDataType = new GraphQLObjectType({
   },
 });
 
-// Define the SignupInput input type
 export const SignupInputType = new GraphQLInputObjectType({
   name: 'SignupInput',
   fields: {
@@ -62,7 +80,6 @@ export const SignupInputType = new GraphQLInputObjectType({
   },
 });
 
-// Define the LoginInput input type
 export const LoginInputType = new GraphQLInputObjectType({
   name: 'LoginInput',
   fields: {

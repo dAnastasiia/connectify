@@ -1,23 +1,28 @@
 import { useEffect } from 'react';
 
-import { useMutation } from '@tanstack/react-query';
+import {
+  QueryFunction,
+  QueryKey,
+  useMutation,
+  useQuery,
+} from '@tanstack/react-query';
 import { ClientError } from 'graphql-request';
 
 import { CustomError } from '@frontend-graphql/types';
 
 import { handleGenericError, handleGraphQLErrors } from './utils';
 
-interface UseGraphQLProps<T, P> {
+interface UseGraphQLMutationProps<T, P> {
   mutationFn: (data: T) => Promise<P>;
   onSuccess: (data: P) => void;
   onError: (errors: CustomError[]) => void;
 }
 
-export default function useGraphQL<T, P>({
+export const useGraphQLMutation = <T, P>({
   onSuccess,
   onError,
   mutationFn,
-}: UseGraphQLProps<T, P>) {
+}: UseGraphQLMutationProps<T, P>) => {
   const { mutate, isPending, isSuccess, data, error } = useMutation({
     mutationFn,
   });
@@ -41,4 +46,21 @@ export default function useGraphQL<T, P>({
   }, [error]);
 
   return { mutate, isPending };
+};
+
+interface UseGraphQLQueryProps<T> {
+  queryFn: () => Promise<T>;
+  queryKey: QueryKey;
 }
+
+export const useGraphQLQuery = <T>({
+  queryKey,
+  queryFn,
+}: UseGraphQLQueryProps<T>) => {
+  const { data, isLoading, error } = useQuery<T, CustomError>({
+    queryKey,
+    queryFn,
+  });
+
+  return { data, isLoading, error };
+};

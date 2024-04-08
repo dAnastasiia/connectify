@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import {
@@ -16,7 +16,7 @@ import {
 import { FormInput, PhotoInput } from '@frontend-graphql/ui-kit/CustomInputs';
 import LoadingButton from '@frontend-graphql/ui-kit/LoadingButton';
 
-import { createPost } from '@frontend-graphql/api/posts';
+import { useCreatePost } from '@frontend-graphql/api/posts';
 import useNotifications from '@frontend-graphql/hooks/useNotifications';
 import { CustomError, ICreatePost } from '@frontend-graphql/types';
 
@@ -25,7 +25,7 @@ import { formParams } from './helpers';
 export default function CreatePost() {
   const queryClient = useQueryClient();
   const form = useForm(formParams);
-  const { handleSuccess, handleError } = useNotifications();
+  const { handleSuccess, handleErrors } = useNotifications();
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -34,14 +34,13 @@ export default function CreatePost() {
     form.reset();
   };
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: createPost,
+  const { mutate, isPending } = useCreatePost({
     onSuccess: () => {
       handleSuccess('Post created');
       handleClose();
       queryClient.invalidateQueries({ queryKey: ['posts'] }); // * refetch posts
     },
-    onError: (error: CustomError) => handleError(error),
+    onError: (errors: CustomError[]) => handleErrors(errors),
   });
 
   const handleSubmit = (data: ICreatePost) => mutate(data);

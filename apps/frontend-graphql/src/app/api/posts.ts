@@ -1,19 +1,58 @@
+import { gql } from 'graphql-request';
+import graphQLClient from './graphql';
+
+import { QueryKey } from '@tanstack/react-query';
+
+import {
+  useGraphQLMutation,
+  useGraphQLQuery,
+} from '@frontend-graphql/hooks/useGraphQL';
+
 import axios from './axios';
 import {
   PageableResponse,
   IPost,
   ICreatePost,
   IUpdatePost,
+  CustomError,
 } from '@frontend-graphql/types';
 
 const path = 'posts';
 
-export const getPosts = async (page: number) => {
-  const response = await axios.get<PageableResponse<IPost>>(path, {
-    params: { page },
+export const useGetPosts = ({
+  queryKey,
+  page,
+}: {
+  queryKey: QueryKey;
+  page: number;
+}) => {
+  const { data, isLoading, error } = useGraphQLQuery<PageableResponse<IPost>>({
+    queryKey,
+    queryFn: async () => {
+      const { getPosts } = await graphQLClient.request(gql`
+        query {
+          getPosts (page: ${page}) {
+            data {
+              _id
+              title
+              content
+              author {
+                name
+              }
+              createdAt
+            }
+            pageNumber
+            pageSize
+            totalCount
+          }
+        }
+      `);
+
+      return getPosts;
+    },
   });
 
-  return response.data;
+  return { data, isLoading, error };
 };
 
 export const getPost = async (id: string) => {
@@ -22,17 +61,35 @@ export const getPost = async (id: string) => {
   return response.data;
 };
 
-export const createPost = async (data: ICreatePost) => {
-  const formData = new FormData();
-  for (const key in data) {
-    formData.append(key, data[key as keyof typeof data] ?? '');
-  }
+export const useCreatePost = ({
+  onSuccess,
+  onError,
+}: {
+  onSuccess: () => void;
+  onError: (errors: CustomError[]) => void;
+}) => {
+  const { mutate, isPending } = useGraphQLMutation({
+    mutationFn: async ({ title, content }: ICreatePost) => {
+      const { createPost } = await graphQLClient.request(gql`
+            mutation { 
+              createPost(inputData: { title: "${title}", content: "${content}", imageUrl: "dummy url" }) { 
+                _id
+                title
+                author {
+                  name
+                }
+                createdAt
+              } 
+            }
+          `);
 
-  await axios.post(path, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
+      return createPost;
     },
+    onSuccess,
+    onError,
   });
+
+  return { mutate, isPending };
 };
 
 export const updatePost = async (data: IUpdatePost) => {

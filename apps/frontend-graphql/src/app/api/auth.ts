@@ -1,14 +1,13 @@
 import { gql } from 'graphql-request';
-
 import graphQLClient from './graphql';
 
+import { useGraphQLMutation } from '@frontend-graphql/hooks/useGraphQL';
 import {
   CustomError,
   ILogin,
   ILoginResponse,
   ISignup,
 } from '@frontend-graphql/types';
-import useGraphQL from '@frontend-graphql/hooks/useGraphQL';
 
 export const useSignup = ({
   onSuccess,
@@ -17,7 +16,7 @@ export const useSignup = ({
   onSuccess: () => void;
   onError: (errors: CustomError[]) => void;
 }) => {
-  const { mutate, isPending } = useGraphQL({
+  const { mutate, isPending } = useGraphQLMutation({
     mutationFn: async ({ name, email, password }: ISignup) => {
       const { signup } = await graphQLClient.request(gql`
            mutation { 
@@ -44,7 +43,7 @@ export const useLogin = ({
   onSuccess: (data: ILoginResponse) => void;
   onError: (errors: CustomError[]) => void;
 }) => {
-  const { mutate, isPending } = useGraphQL({
+  const { mutate, isPending } = useGraphQLMutation({
     mutationFn: async ({ email, password }: ILogin) => {
       const { login } = await graphQLClient.request(gql`
             mutation { 
@@ -71,7 +70,7 @@ export const useLogout = ({
   onSuccess: () => void;
   onError: (errors: CustomError[]) => void;
 }) => {
-  const { mutate, isPending } = useGraphQL({
+  const { mutate, isPending } = useGraphQLMutation({
     mutationFn: async () => {
       const { logout } = await graphQLClient.request(gql`
         mutation {
