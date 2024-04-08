@@ -3,7 +3,7 @@ import axios from 'axios';
 import { LOCAL_STORAGE_KEYS } from '@frontend-graphql/utils/constants';
 import getJwtExpDate from '@frontend-graphql/utils/getJwtExpDate';
 
-import { handleLogout } from './handleLogout';
+import { handleLogout } from '../utils/handleLogout';
 
 import { environment } from '../../../environments/environment';
 

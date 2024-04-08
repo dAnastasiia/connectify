@@ -7,7 +7,7 @@ import Loader from '../Loader';
 
 interface ContainerWrapperProps {
   isLoading: boolean;
-  error: CustomError | null;
+  error: CustomError;
   children: ReactNode;
 }
 

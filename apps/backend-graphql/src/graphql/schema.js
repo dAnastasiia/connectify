@@ -1,6 +1,7 @@
 // Queries, invitations, types for GraphQL service
 import {
   GraphQLBoolean,
+  GraphQLID,
   GraphQLInt,
   GraphQLObjectType,
   GraphQLSchema,
@@ -13,9 +14,10 @@ import {
   LoginInputType,
   SignupInputType,
   UserType,
-  PostInputType,
   PostType,
   PostsType,
+  CreatePostInputType,
+  UpdatePostInputType,
 } from './types';
 
 // Define the RootMutation type
@@ -43,9 +45,23 @@ const RootMutationType = new GraphQLObjectType({
     createPost: {
       type: PostType,
       args: {
-        inputData: { type: PostInputType },
+        inputData: { type: CreatePostInputType },
       },
       resolve: resolvers.createPost,
+    },
+    updatePost: {
+      type: PostType,
+      args: {
+        inputData: { type: UpdatePostInputType },
+      },
+      resolve: resolvers.updatePost,
+    },
+    deletePost: {
+      type: GraphQLBoolean,
+      args: {
+        id: { type: GraphQLID },
+      },
+      resolve: resolvers.deletePost,
     },
   },
 });
@@ -54,16 +70,19 @@ const RootMutationType = new GraphQLObjectType({
 const RootQueryType = new GraphQLObjectType({
   name: 'RootQuery',
   fields: {
-    hello: {
-      type: GraphQLString,
-      resolve: () => 'hello',
-    },
     getPosts: {
       type: PostsType,
       args: {
         page: { type: GraphQLInt },
       },
       resolve: resolvers.getPosts,
+    },
+    getPost: {
+      type: PostType,
+      args: {
+        id: { type: GraphQLString },
+      },
+      resolve: resolvers.getPost,
     },
   },
 });

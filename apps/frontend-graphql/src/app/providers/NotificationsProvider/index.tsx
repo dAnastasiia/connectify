@@ -9,7 +9,6 @@ export const NotificationsContext = createContext<NotificationsProps>(
 );
 
 export interface NotificationsProps {
-  handleError: (error: CustomError) => void;
   handleSuccess: (message: string) => void;
   handleErrors: (errors: CustomError[]) => void;
 }
@@ -42,25 +41,8 @@ export default function NotificationsProvider({
     });
   };
 
-  const handleError = ({ errors, message = '' }: CustomError) => {
-    if (errors?.length) {
-      errors?.forEach((error) => {
-        logger.error(error?.msg);
-        toast.error(error?.msg);
-      });
-      return;
-    }
-
-    if (message) {
-      logger.error(message);
-      toast.error(message);
-    }
-  };
-
   return (
-    <NotificationsContext.Provider
-      value={{ handleSuccess, handleError, handleErrors }}
-    >
+    <NotificationsContext.Provider value={{ handleSuccess, handleErrors }}>
       {children}
     </NotificationsContext.Provider>
   );

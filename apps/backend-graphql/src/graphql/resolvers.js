@@ -1,4 +1,7 @@
 // Logic to handle incoming queries
+import fs from 'fs';
+import path from 'path';
+
 import bcrypt from 'bcrypt';
 import validator from 'validator';
 import jwt from 'jsonwebtoken';
@@ -12,6 +15,7 @@ const saltRound = +process.env.SALT_ROUND;
 const tokenSecret = `${process.env.TOKEN_SECRET}`;
 
 export default {
+  // Authentication
   signup: async function (parent, { inputData }, context) {
     const { name, email, password } = inputData;
     const errors = [];
@@ -100,6 +104,7 @@ export default {
     return true; // Indicate successful logout
   },
 
+  // Posts
   createPost: async function (parent, { inputData }, { req }) {
     const userId = req.raw.userId;
 
@@ -114,6 +119,7 @@ export default {
       errors.push({ msg: 'Invalid title' });
     if (!validator.isLength(content, { min: 5 }))
       errors.push({ msg: 'Invalid content' });
+    if (validator.isEmpty(imageUrl)) errors.push({ msg: 'No image provided' });
 
     if (errors.length) {
       createError('Data is incorrect', 422, errors);
@@ -138,6 +144,85 @@ export default {
     return createdPost;
   },
 
+  updatePost: async function (parent, { inputData }, { req }) {
+    const userId = req.raw.userId;
+    if (!userId) {
+      createError('Not authenticated', 401);
+    }
+
+    const { id, title, content, imageUrl } = inputData;
+    const errors = [];
+
+    if (!validator.isLength(title, { min: 5 }))
+      errors.push({ msg: 'Invalid title' });
+    if (!validator.isLength(content, { min: 5 }))
+      errors.push({ msg: 'Invalid content' });
+    if (validator.isEmpty(imageUrl)) errors.push({ msg: 'No image provided' });
+    if (errors.length) {
+      createError('Data is incorrect', 422, errors);
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      createError('User is not found', 404);
+    }
+
+    const post = await Post.findById(id);
+    if (!post) {
+      createError("Couldn't find the post", 404);
+    }
+
+    const isCreator = post.author?.toString() === userId;
+    if (!isCreator) {
+      createError('Not authorized', 403);
+    }
+
+    post.title = title;
+    post.content = content;
+    post.imageUrl = imageUrl;
+
+    const data = await post.save();
+
+    return {
+      ...data._doc,
+      _id: data._id.toString(),
+      createdAt: data.createdAt.toISOString(),
+      updatedAt: data.updatedAt.toISOString(),
+    };
+  },
+
+  deletePost: async function (parent, { id }, { req }) {
+    const userId = req.raw.userId;
+    if (!userId) {
+      createError('Not authenticated', 401);
+    }
+
+    const post = await Post.findById(id);
+    if (!post) {
+      createError("Couldn't find the post", 404);
+    }
+
+    const isCreator = post.author?.toString() === userId;
+    if (!isCreator) {
+      createError('Not authorized', 403);
+    }
+
+    await Post.deleteOne({ _id: id });
+
+    const filePath = path.join('tmp', post.imageUrl);
+    fs.unlink(filePath, (err) => {
+      if (err) {
+        throw err;
+      }
+    });
+
+    const user = await User.findById(userId);
+    user.posts.pull(id);
+    await user.save();
+
+    return true;
+  },
+
   getPosts: async function (parent, { page }, { req }) {
     const userId = req.raw.userId;
 
@@ -146,7 +231,7 @@ export default {
     }
 
     const pageNumber = +page || 1;
-    const pageSize = 1;
+    const pageSize = 4;
 
     const totalCount = await Post.find().countDocuments();
     const data = await Post.find()
@@ -165,6 +250,27 @@ export default {
     });
 
     return { data: parsedData, pageNumber, pageSize, totalCount };
+  },
+
+  getPost: async function (parent, { id }, { req }) {
+    const userId = req.raw.userId;
+
+    if (!userId) {
+      createError('Not authenticated', 401);
+    }
+
+    const post = await Post.findById(id).populate('author', 'name email');
+
+    if (!post) {
+      createError("Couldn't find the post", 404);
+    }
+
+    return {
+      ...post._doc,
+      _id: post._id.toString(),
+      createdAt: post.createdAt.toISOString(),
+      updatedAt: post.updatedAt.toISOString(),
+    };
   },
 
   // Utils

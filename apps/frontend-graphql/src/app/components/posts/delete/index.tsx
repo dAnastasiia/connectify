@@ -1,8 +1,6 @@
 import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useMutation } from '@tanstack/react-query';
-
 import {
   Button,
   Dialog,
@@ -14,7 +12,7 @@ import {
 
 import LoadingButton from '@frontend-graphql/ui-kit/LoadingButton';
 
-import { deletePost } from '@frontend-graphql/api/posts';
+import { useDeletePost } from '@frontend-graphql/api/posts';
 import { Routes } from '@frontend-graphql/constants/Routes';
 import useNotifications from '@frontend-graphql/hooks/useNotifications';
 import { CustomError } from '@frontend-graphql/types';
@@ -24,7 +22,7 @@ export default function DeletePost() {
   const { data } = useContext(PostContext);
 
   const navigate = useNavigate();
-  const { handleSuccess, handleError } = useNotifications();
+  const { handleSuccess, handleErrors } = useNotifications();
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -34,14 +32,13 @@ export default function DeletePost() {
     setIsOpen(false);
   };
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: deletePost,
+  const { mutate, isPending } = useDeletePost({
     onSuccess: () => {
       handleSuccess('Post deleted');
       handleClose();
       navigate(`/${posts.baseRoutes.URL}`);
     },
-    onError: (error: CustomError) => handleError(error),
+    onError: (errors: CustomError[]) => handleErrors(errors),
   });
 
   const handleSubmit = () => mutate(data._id);

@@ -1,7 +1,7 @@
 import { LOCAL_STORAGE_KEYS } from '@frontend-graphql/utils/constants';
 import getJwtExpDate from '@frontend-graphql/utils/getJwtExpDate';
 
-import { handleLogout } from '../axios/handleLogout';
+import { handleLogout } from '../utils/handleLogout';
 
 export default function getAuthHeader() {
   const accessToken = localStorage.getItem(LOCAL_STORAGE_KEYS.accessToken);
@@ -14,5 +14,5 @@ export default function getAuthHeader() {
     return '';
   }
 
-  return `Bearer ${accessToken}`;
+  return accessToken ? `Bearer ${accessToken}` : '';
 }

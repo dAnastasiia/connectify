@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
 
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import {
@@ -17,7 +16,7 @@ import {
 import { FormInput, PhotoInput } from '@frontend-graphql/ui-kit/CustomInputs';
 import LoadingButton from '@frontend-graphql/ui-kit/LoadingButton';
 
-import { updatePost } from '@frontend-graphql/api/posts';
+import { useUpdatePost } from '@frontend-graphql/api/posts';
 import { PostContext } from '@frontend-graphql/contexts/PostContext';
 import useNotifications from '@frontend-graphql/hooks/useNotifications';
 import { CustomError, IUpdatePost } from '@frontend-graphql/types';
@@ -29,11 +28,11 @@ export default function UpdatePost() {
   const { data } = useContext(PostContext);
 
   const form = useForm(formParams(data));
-  //   useEffect(() => {
-  //     form.reset(data); // * Update form values when data changes
-  //   }, [data]);
+  useEffect(() => {
+    form.reset(data); // * Update form values when data changes
+  }, [data]);
 
-  const { handleSuccess, handleError } = useNotifications();
+  const { handleSuccess, handleErrors } = useNotifications();
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -42,14 +41,13 @@ export default function UpdatePost() {
     form.reset();
   };
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: updatePost,
+  const { mutate, isPending } = useUpdatePost({
     onSuccess: () => {
       handleSuccess('Post updated');
       handleClose();
       queryClient.invalidateQueries({ queryKey: [data._id] });
     },
-    onError: (error: CustomError) => handleError(error),
+    onError: (errors: CustomError[]) => handleErrors(errors),
   });
 
   const handleSubmit = (formData: IUpdatePostForm) => {

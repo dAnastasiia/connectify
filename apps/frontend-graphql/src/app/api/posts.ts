@@ -1,5 +1,4 @@
 import { gql } from 'graphql-request';
-import graphQLClient from './graphql';
 
 import { QueryKey } from '@tanstack/react-query';
 
@@ -7,8 +6,6 @@ import {
   useGraphQLMutation,
   useGraphQLQuery,
 } from '@frontend-graphql/hooks/useGraphQL';
-
-import axios from './axios';
 import {
   PageableResponse,
   IPost,
@@ -16,6 +13,9 @@ import {
   IUpdatePost,
   CustomError,
 } from '@frontend-graphql/types';
+
+import graphQLClient from './graphql';
+import axios from './axios';
 
 const path = 'posts';
 
@@ -36,6 +36,7 @@ export const useGetPosts = ({
               _id
               title
               content
+              imageUrl
               author {
                 name
               }
@@ -55,10 +56,37 @@ export const useGetPosts = ({
   return { data, isLoading, error };
 };
 
-export const getPost = async (id: string) => {
-  const response = await axios.get(`${path}/${id}`);
+export const useGetPost = ({
+  queryKey,
+  id,
+}: {
+  queryKey: QueryKey;
+  id: string;
+}) => {
+  const { data, isLoading, error, refetch } = useGraphQLQuery<IPost>({
+    queryKey,
+    queryFn: async () => {
+      const { getPost } = await graphQLClient.request(gql`
+         query {
+           getPost (id: "${id}") {             
+               _id
+               title
+               content
+               imageUrl
+               author {
+                 name
+               }
+               createdAt
+               updatedAt            
+           }
+         }
+       `);
 
-  return response.data;
+      return getPost;
+    },
+  });
+
+  return { data, isLoading, error, refetch };
 };
 
 export const useCreatePost = ({
@@ -69,10 +97,24 @@ export const useCreatePost = ({
   onError: (errors: CustomError[]) => void;
 }) => {
   const { mutate, isPending } = useGraphQLMutation({
-    mutationFn: async ({ title, content }: ICreatePost) => {
+    mutationFn: async ({ title, content, image }: ICreatePost) => {
+      const formData = new FormData();
+
+      if (image) {
+        formData.append('image', image);
+      }
+
+      const response = await axios.put(`post-image`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      const imageUrl = response.data.filePath;
+
       const { createPost } = await graphQLClient.request(gql`
             mutation { 
-              createPost(inputData: { title: "${title}", content: "${content}", imageUrl: "dummy url" }) { 
+              createPost(inputData: { title: "${title}", content: "${content}", imageUrl: "${imageUrl}" }) { 
                 _id
                 title
                 author {
@@ -92,24 +134,78 @@ export const useCreatePost = ({
   return { mutate, isPending };
 };
 
-export const updatePost = async (data: IUpdatePost) => {
-  const { id, title, content, image, imageUrl } = data;
+export const useUpdatePost = ({
+  onSuccess,
+  onError,
+}: {
+  onSuccess: () => void;
+  onError: (errors: CustomError[]) => void;
+}) => {
+  const { mutate, isPending } = useGraphQLMutation({
+    mutationFn: async ({
+      id,
+      title,
+      content,
+      image,
+      imageUrl: oldImageUrl,
+    }: IUpdatePost) => {
+      const formData = new FormData();
 
-  const formData = new FormData();
-  formData.append('title', title);
-  formData.append('content', content);
-  formData.append('imageUrl', imageUrl);
+      if (image) {
+        formData.append('image', image);
+      }
+      formData.append('oldPath', oldImageUrl);
 
-  if (image) {
-    formData.append('image', image);
-  }
+      const response = await axios.put('post-image', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
 
-  await axios.put(`${path}/${id}`, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
+      const imageUrl = response.data.filePath;
+
+      const { updatePost } = await graphQLClient.request(gql`
+             mutation { 
+               updatePost(inputData: { id: "${id}", title: "${title}", content: "${content}", imageUrl: "${imageUrl}" }) { 
+                 _id
+                 title
+                 author {
+                   name
+                 }
+                 createdAt
+               } 
+             }
+           `);
+
+      return updatePost;
     },
+    onSuccess,
+    onError,
   });
+
+  return { mutate, isPending };
 };
 
-export const deletePost = async (id: string) =>
-  await axios.delete(`${path}/${id}`);
+export const useDeletePost = ({
+  onSuccess,
+  onError,
+}: {
+  onSuccess: () => void;
+  onError: (errors: CustomError[]) => void;
+}) => {
+  const { mutate, isPending } = useGraphQLMutation({
+    mutationFn: async (id: string) => {
+      const { deletePost } = await graphQLClient.request(gql`
+        mutation {
+          deletePost(id: "${id}")
+        }
+      `);
+
+      return deletePost;
+    },
+    onSuccess,
+    onError,
+  });
+
+  return { mutate, isPending };
+};
