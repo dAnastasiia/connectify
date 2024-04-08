@@ -1,7 +1,5 @@
-import { useMutation } from '@tanstack/react-query';
-import { ClientError, gql } from 'graphql-request';
+import { gql } from 'graphql-request';
 
-import axios from './axios';
 import graphQLClient from './graphql';
 
 import {
@@ -10,9 +8,7 @@ import {
   ILoginResponse,
   ISignup,
 } from '@frontend-graphql/types';
-import { useEffect } from 'react';
-
-const path = 'auth';
+import useGraphQL from '@frontend-graphql/hooks/useGraphQL';
 
 export const useSignup = ({
   onSuccess,
@@ -21,11 +17,9 @@ export const useSignup = ({
   onSuccess: () => void;
   onError: (errors: CustomError[]) => void;
 }) => {
-  const { mutate, isPending, isSuccess, data } = useMutation({
-    mutationKey: ['signup'],
+  const { mutate, isPending } = useGraphQL({
     mutationFn: async ({ name, email, password }: ISignup) => {
-      try {
-        const { signup } = await graphQLClient.request(gql`
+      const { signup } = await graphQLClient.request(gql`
            mutation { 
              signup(inputData: { name: "${name}", email: "${email}", password: "${password}" }) { 
                name
@@ -34,41 +28,62 @@ export const useSignup = ({
            }
          `);
 
-        return signup;
-      } catch (error) {
-        const errors = (error as ClientError).response.errors;
-
-        if (errors?.length) {
-          // * Convert GraphQL errors to CustomError type
-          const customErrors: CustomError[] = errors.map((err: any) => ({
-            message: err.message,
-            status: err.status,
-            errors: err.errors,
-          }));
-
-          onError(customErrors);
-        } else {
-          return onError([{ message: 'Unknown error occurred', status: 500 }]);
-        }
-
-        throw error;
-      }
+      return signup;
     },
+    onSuccess,
+    onError,
   });
-
-  useEffect(() => {
-    if (data && isSuccess) {
-      onSuccess();
-    }
-  }, [isSuccess, onSuccess]);
 
   return { mutate, isPending };
 };
 
-export const login = async (data: ILogin) => {
-  const response = await axios.post<ILoginResponse>(`${path}/login`, data);
+export const useLogin = ({
+  onSuccess,
+  onError,
+}: {
+  onSuccess: (data: ILoginResponse) => void;
+  onError: (errors: CustomError[]) => void;
+}) => {
+  const { mutate, isPending } = useGraphQL({
+    mutationFn: async ({ email, password }: ILogin) => {
+      const { login } = await graphQLClient.request(gql`
+            mutation { 
+              login(inputData: { email: "${email}", password: "${password}" }) { 
+                accessToken
+                userId 
+              } 
+            }
+          `);
 
-  return response.data;
+      return login;
+    },
+    onSuccess,
+    onError,
+  });
+
+  return { mutate, isPending };
 };
 
-export const logout = () => axios.get(`${path}/logout`);
+export const useLogout = ({
+  onSuccess,
+  onError,
+}: {
+  onSuccess: () => void;
+  onError: (errors: CustomError[]) => void;
+}) => {
+  const { mutate, isPending } = useGraphQL({
+    mutationFn: async () => {
+      const { logout } = await graphQLClient.request(gql`
+        mutation {
+          logout
+        }
+      `);
+
+      return logout;
+    },
+    onSuccess,
+    onError,
+  });
+
+  return { mutate, isPending };
+};
